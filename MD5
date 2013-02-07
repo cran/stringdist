@@ -1,0 +1,13 @@
+3086105130f0008f1996b0aaa0b0c89d *DESCRIPTION
+b5a26773d972d20b4af4a5d3c941d516 *NAMESPACE
+7ca2ebfb6ba253305e66d0115c91e6b2 *R/stringdist.R
+e38e932e4bf75592ccd2e4fa36ce4eec *inst/tests/testStringdist.R
+3e149c2b16023c0f560a053c097c9e0e *man/stringdist-package.Rd
+a115370d8d6f6cbcfd2e78c3a02419ce *man/stringdist.Rd
+c5004f62827c18249f592b96c8951552 *src/dl.c
+67261b42dfe674a18a13712d9ea6fc6b *src/hamming.c
+9f20f41ab1b5640690510adbf3995685 *src/lv.c
+714361cf71b12aad60be9af0e6c566de *src/osa.c
+4a90b1bc28c9ab182a1806de645e0f42 *src/utils.c
+8279ae386a20c7767679a4af8c0c9268 *src/utils.h
+63d2cd5d5c44c78cb377dc37bdf33916 *tests/testpackage.R
