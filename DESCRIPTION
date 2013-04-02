@@ -9,12 +9,12 @@ Author: Mark van der Loo
 Description: Implements the Hamming distance and weighted versions of
         the Levenshtein, restricted Damerau-Levenshtein (optimal string
         alignment), and Damerau-Levenshtein distance.
-Version: 0.4-0
+Version: 0.4-2
 Depends: parallel
 URL: https://github.com/markvanderloo/stringdist
 Date: 2013-04-02
 Suggests: testthat
 Collate: 'stringdist.R'
-Packaged: 2013-02-07 14:22:07 UTC; mark
+Packaged: 2013-02-11 08:06:36 UTC; mark
 Repository: CRAN
-Date/Publication: 2013-02-07 15:55:19
+Date/Publication: 2013-02-11 11:11:11

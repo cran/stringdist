@@ -1,3 +1,5 @@
-if ( require(testthat) ){ 
-    test_package("stringdist")
-}
+
+if ( require(testthat) )
+   test_package("stringdist")
+
+
