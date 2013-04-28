@@ -1,23 +1,23 @@
 Package: stringdist
 Maintainer: Mark van der Loo <mark.vanderloo@gmail.com>
 License: GPL-3
-Title: String distance functions for R
+Title: Approximate string matching and string distance functions.
 LazyData: no
 Type: Package
 LazyLoad: yes
 Author: Mark van der Loo
-Description: Implements the following string distance functions: Q-gram
-        distance, Hamming distance, (weighted) Levenshtein, (weighted)
-        restricted Damerau-Levenshtein (a.k.a. optimal string
-        alignment), (weighted) Damerau-Levenshtein distance, longest
-        common substring distance.
-Version: 0.5.0
+Description: Implements an approximate string matching version of R's native
+    'match' function. Can calculate various string distances based on edits
+    (damerau-levenshtein, hamming, levenshtein, optimal sting alignment),
+    qgrams (q-gram, cosine, jaccard distance) or heuristic metrics (jaro,
+    jaro-winkler).
+Version: 0.6.0
 Depends: parallel
 URL: https://github.com/markvanderloo/stringdist
 Date: 2013-04-28
 Suggests: testthat
-Collate: 'stringdist.R' 'utils.R'
-Packaged: 2013-06-21 14:36:01 UTC; mark
+Collate: 'amatch.R' 'qgrams.R' 'stringdist.R' 'utils.R'
+Packaged: 2013-07-19 09:58:56 UTC; mark
 NeedsCompilation: yes
 Repository: CRAN
-Date/Publication: 2013-06-21 17:36:00
+Date/Publication: 2013-07-19 12:54:43

@@ -4,11 +4,12 @@
 #define USE_RINTERNALS
 #include <R.h>
 #include <Rdefines.h>
+#include "utils.h"
 
 int hamming(unsigned int *a, unsigned int *b, int n, int maxDistance){
-   int i, h=0;
-   for(i=0; i<n; ++i){
-      h += (a[i] == b[i]) ? 0 : 1;
+   int h=0;
+   for(int i=0; i<n; ++i){
+      if (a[i] != b[i]) h++;
       if ( maxDistance > 0 && maxDistance < h ){
          return -1;
       }
@@ -28,38 +29,95 @@ SEXP R_hm(SEXP a, SEXP b, SEXP maxDistance){
   int nb = length(b);
   int nt = ( na > nb) ? na : nb;
   SEXP yy;
-  PROTECT(yy = allocVector(INTSXP,nt));
-  int *y = INTEGER(yy);
-  int i,j,k,nchar;
+  PROTECT(yy = allocVector(REALSXP,nt));
+  double *y = REAL(yy);
+  int i=0, j=0, k=0, nchar;
   int maxDist = INTEGER(maxDistance)[0];
 
   for ( k=0; k<nt; ++k){
-    i = k % na;
-    j = k % nb;
     if ( INTEGER(VECTOR_ELT(a,i))[0] == NA_INTEGER || INTEGER(VECTOR_ELT(b,j))[0] == NA_INTEGER ){
-      y[k] = NA_INTEGER;
+      y[k] = NA_REAL;
       continue;         
     }
     nchar = length(VECTOR_ELT(a,i));
     if ( nchar != length(VECTOR_ELT(b,j)) ){
-      y[k] = -1;
+      y[k] = R_PosInf;
       continue;
     }
-    y[k] = hamming(
+    y[k] = (double) hamming(
       (unsigned int *) INTEGER(VECTOR_ELT(a,i)),
       (unsigned int *) INTEGER(VECTOR_ELT(b,j)),
       nchar,
       maxDist
     );
+    if (y[k] < 0) y[k] = R_PosInf;
+    i = RECYCLE(i+1,na);
+    j = RECYCLE(j+1,nb);
   }
   UNPROTECT(4);
   return yy;
 }
-/*
-#include <stdio.h>
-void main(){
-   int h = hamming("aa","ab",0);
-   printf("h = %d\n",h);
+
+
+//-- Match function interface with R
+
+SEXP R_match_hm(SEXP x, SEXP table, SEXP nomatch, SEXP matchNA, SEXP maxDistance){
+  PROTECT(x);
+  PROTECT(table);
+  PROTECT(nomatch);
+  PROTECT(matchNA);
+  PROTECT(maxDistance);
+
+  int nx = length(x), ntable = length(table);
+  int no_match = INTEGER(nomatch)[0];
+  int match_na = INTEGER(matchNA)[0];
+  int max_dist = INTEGER(maxDistance)[0];
+
+
+  // output vector
+  SEXP yy;
+  PROTECT(yy = allocVector(INTSXP, nx));
+  int *y = INTEGER(yy);
+  int *X, *T;
+
+
+  double d = R_PosInf, d1 = R_PosInf;
+  int nchar, index, xNA, tNA;
+
+  for ( int i=0; i<nx; i++){
+    index = no_match;
+    nchar = length(VECTOR_ELT(x,i));
+
+    X = INTEGER(VECTOR_ELT(x,i));
+    xNA = (X[0] == NA_INTEGER);
+
+    for ( int j=0; j<ntable; j++){
+      if ( nchar != length(VECTOR_ELT(table,j)) ) continue;
+
+      T = INTEGER(VECTOR_ELT(table,j));
+      tNA = (T[0] == NA_INTEGER);
+
+      if ( !xNA && !tNA ){        // both are char (usual case)
+        d = (double) hamming(
+          (unsigned int *) X,
+          (unsigned int *) T,
+          nchar,
+          max_dist
+        );
+        if ( d > -1 && d < d1){ 
+          index = j + 1;
+          if ( d == 0.0 ) break;
+          d1 = d;
+        }
+      } else if ( xNA && tNA ) {  // both are NA
+        index = match_na ? j + 1 : no_match;
+        break;
+      }
+    }
+    
+    y[i] = index;
+  }  
+  UNPROTECT(6);
+  return(yy);
 }
 
-*/
