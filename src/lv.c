@@ -1,3 +1,21 @@
+/*  stringdist - a C library of string distance algorithms with an interface to R.
+ *  Copyright (C) 2013  Mark van der Loo
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ *
+ *  You can contact the author at: mark _dot_ vanderloo _at_ gmail _dot_ com
+ */
 
 #define USE_RINTERNALS
 #include <stdlib.h>
@@ -10,52 +28,57 @@
  * - Simplified from restricted DL pseudocode at http://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance
  * - Extended with custom weights and maxDistance
  */
-static double lv(unsigned int *a, int na, unsigned int *b, int nb, double *weight, double maxDistance, double *scores){
-  if (na == 0){
+static double lv(
+  unsigned int *a, int na, 
+  unsigned int *b, int nb, 
+  int bytes,
+  double *weight, 
+  double maxDistance, 
+  double *scores){
+  if (!na){
     if ( maxDistance > 0 && maxDistance < nb ){
       return -1;
     } else {
       return (double) nb;
     }
   }
-  if (nb == 0){
+  if (!nb){
     if (maxDistance > 0 && maxDistance < na){
       return -1;
     } else {
       return (double) na;
     }
   }
-  
- 
-   int i, j;
-   int I = na+1, J = nb+1;
-   double sub;
 
-   for ( i = 0; i < I; ++i ){
-      scores[i] = i;
-   }
-   for ( j = 1; j < J; ++j ){
-      scores[I*j] = j;
-   }
+  int i, j;
+  int I = na+1, L = na+1, J = nb+1;
+  double sub;
 
-   for ( i = 1; i <= na; ++i ){
-      
-      for ( j = 1; j <= nb; ++j ){
-         sub = (a[i-1] == b[j-1]) ? 0 : weight[2];
-         scores[i + I*j] = min3( 
-            scores[i-1 + I*j    ] + weight[0],     // deletion
-            scores[i   + I*(j-1)] + weight[1],     // insertion
-            scores[i-1 + I*(j-1)] + sub            // substitution
-         );
-     
-      }
-   }
-   double score = scores[I*J-1];
-   return (maxDistance > 0 && maxDistance < score)?(-1):score;
+
+  for ( i = 0; i < I; ++i ){
+    scores[i] = i;
+  }
+  for ( j = 1; j < J; ++j, L += I ){
+   scores[L] = j;
+  }
+
+  int M;
+  for ( i = 1; i <= na; ++i ){
+    L = I; M= 0; 
+    for ( j = 1; j <= nb; ++j, L += I, M += I ){
+      sub = (a[i-1] == b[j-1]) ? 0 : weight[2];
+      scores[i + L] = MIN(MIN( 
+        scores[i-1 + L] + weight[0],     // deletion
+        scores[i   + M] + weight[1]),    // insertion
+        scores[i-1 + M] + sub            // substitution
+      );
+    }
+  }
+  double score = scores[I*J-1];
+  return (maxDistance > 0 && maxDistance < score)?(-1):score;
 }
 
-//-- interface with R
-
+/* ------ interface with R -------- */
 
 SEXP R_lv(SEXP a, SEXP b, SEXP weight, SEXP maxDistance){
   PROTECT(a);
@@ -63,45 +86,60 @@ SEXP R_lv(SEXP a, SEXP b, SEXP weight, SEXP maxDistance){
   PROTECT(weight);
   PROTECT(maxDistance);
 
-  int na = length(a), nb = length(b);
-  double *scores; 
-  double *w = REAL(weight);
+  int na = length(a)
+    , nb = length(b)
+    , bytes = IS_CHARACTER(a)
+    , ml_a = max_length(a)
+    , ml_b = max_length(b);
+
+  double *scores, *w = REAL(weight);
+
   double maxDist = REAL(maxDistance)[0];
 
-  scores = (double *) malloc((max_length(a) + 1) * (max_length(b) + 1) * sizeof(double)); 
-  if ( scores == NULL ){
+
+  scores = (double *) malloc((ml_a + 1) * (ml_b + 1) * sizeof(double)); 
+  unsigned int *s = NULL, *t = NULL;
+  if ( bytes ){
+    s = (unsigned int *) malloc( (ml_a + ml_b) * sizeof(int));
+    t = s + ml_a;
+  }
+  if ( (scores == NULL) | (bytes && s == NULL) ){
     UNPROTECT(4);
-    error("%s\n","unable to allocate enough memory for workspace");
+    free(scores);
+    free(s);
+    error("Unable to allocate enough memory for workspace");
   }
 
   // output vector
-  int nt = (na > nb) ? na : nb;   
-  int i=0,j=0;
+  int nt = (na > nb) ? na : nb; 
   SEXP yy;
   PROTECT(yy = allocVector(REALSXP, nt));
   double *y = REAL(yy);   
   
-  for ( int k=0; k < nt; ++k ){
-    if (INTEGER(VECTOR_ELT(a,i))[0] == NA_INTEGER || INTEGER(VECTOR_ELT(b,j))[0] == NA_INTEGER){
+  int i=0, j=0, len_s, len_t, isna_s, isna_t;
+  for ( int k=0; k < nt; 
+        ++k
+      , i = RECYCLE(i+1,na)
+      , j = RECYCLE(j+1,nb) ){
+
+    s = get_elem(a, i, bytes, &len_s, &isna_s, s);
+    t = get_elem(b, j, bytes, &len_t, &isna_t, t);
+    if (isna_s || isna_t){
       y[k] = NA_REAL;
       continue;
     }
     y[k] = lv(
-     (unsigned int *) INTEGER(VECTOR_ELT(a,i)), 
-     length(VECTOR_ELT(a,i)), 
-     (unsigned int *) INTEGER(VECTOR_ELT(b,j)), 
-     length(VECTOR_ELT(b,j)), 
-     w,
-     maxDist,
-     scores
+        s, len_s
+      , t, len_t
+      , bytes, w, maxDist, scores 
     );
     if (y[k] < 0 ) y[k] = R_PosInf;
-    i = RECYCLE(i+1,na);
-    j = RECYCLE(j+1,nb);
   }
   
   free(scores);
+  if ( bytes ) free(s); 
   UNPROTECT(5);
+
   return(yy);
 }
 
@@ -116,56 +154,57 @@ SEXP R_match_lv(SEXP x, SEXP table, SEXP nomatch, SEXP matchNA, SEXP weight, SEX
   PROTECT(weight);
   PROTECT(maxDistance);
 
-  int nx = length(x), ntable = length(table);
-  int no_match = INTEGER(nomatch)[0];
-  int match_na = INTEGER(matchNA)[0];
+  int nx = length(x)
+    , ntable = length(table)
+    , no_match = INTEGER(nomatch)[0]
+    , match_na = INTEGER(matchNA)[0]
+    , bytes = IS_CHARACTER(x)
+    , ml_x = max_length(x)
+    , ml_t = max_length(table);
+
   double *w = REAL(weight);
   double maxDist = REAL(maxDistance)[0];
   
   /* claim space for workhorse */
-  double *scores = (double *) malloc((max_length(x) + 1) * (max_length(table) + 1) * sizeof(double)); 
-  if ( scores == NULL ){
-     UNPROTECT(6);
-     error("%s\n","unable to allocate enough memory");
+  double *work = (double *) malloc((ml_x + 1) * (ml_t + 1) * sizeof(double)); 
+  unsigned int *X = NULL, *T = NULL;
+  if ( bytes ){
+    X = (unsigned int *) malloc((ml_x + ml_t) * sizeof(int));
+    T = X + ml_x;
+  }
+
+  if ( (work == NULL) | (bytes && X == NULL) ){
+     UNPROTECT(6); free(work); free(X);
+     error("Unable to allocate enough memory");
   }
 
   // output vector
   SEXP yy;
   PROTECT(yy = allocVector(INTSXP, nx));
   int *y = INTEGER(yy);
-  int *X, *T;
-
 
   double d = R_PosInf, d1 = R_PosInf;
-  int index, xNA, tNA;
+  int index, isna_X, len_X, isna_T, len_T;
 
   for ( int i=0; i<nx; i++){
     index = no_match;
 
-    X = INTEGER(VECTOR_ELT(x,i));
-    xNA = (X[0] == NA_INTEGER);
-
+    X = get_elem(x,i, bytes, &len_X, &isna_X, X);
+    d1 = R_PosInf;
     for ( int j=0; j<ntable; j++){
 
-      T = INTEGER(VECTOR_ELT(table,j));
-      tNA = (T[0] == NA_INTEGER);
+      T = get_elem(table, j, bytes, &len_T, &isna_T, T);
 
-      if ( !xNA && !tNA ){        // both are char (usual case)
+      if ( !isna_X && !isna_T ){        // both are char (usual case)
         d = lv(
-          (unsigned int *) X, 
-          length(VECTOR_ELT(x,i)), 
-          (unsigned int *) T, 
-          length(VECTOR_ELT(table,j)), 
-          w,
-          maxDist,
-          scores
+          X, len_X, T, len_T, 0, w, maxDist, work
         );
         if ( d > -1 && d < d1){ 
           index = j + 1;
           if ( d == 0.0 ) break;
           d1 = d;
         }
-      } else if ( xNA && tNA ) {  // both are NA
+      } else if ( isna_X && isna_T ) {  // both are NA
         index = match_na ? j + 1 : no_match;
         break;
       }
@@ -173,8 +212,10 @@ SEXP R_match_lv(SEXP x, SEXP table, SEXP nomatch, SEXP matchNA, SEXP weight, SEX
     
     y[i] = index;
   }  
+
+  if (bytes) free(X);
+  free(work);
   UNPROTECT(7);
-  free(scores);
   return(yy);
 }
 

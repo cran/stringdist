@@ -5,31 +5,39 @@
 \usage{
   amatch(x, table, nomatch = NA_integer_, matchNA = TRUE,
     method = c("osa", "lv", "dl", "hamming", "lcs", "qgram", "cosine", "jaccard", "jw"),
+    useBytes = FALSE,
     weight = c(d = 1, i = 1, s = 1, t = 1), maxDist = 0.1,
     q = 1, p = 0)
 
   ain(x, table, ...)
 }
 \arguments{
-  \item{x}{vector: elements to be approximately matched}
+  \item{x}{vector: elements to be approximately matched:
+  will be coerced to \code{character}.}
 
-  \item{table}{vector: lookup table for matching}
+  \item{table}{vector: lookup table for matching. Will be
+  coerced to \code{character}.}
 
-  \item{nomatch}{the value to be returned when no match is
+  \item{nomatch}{The value to be returned when no match is
   found. This is coerced to integer. \code{nomatch=0} can
   be a useful option.}
 
   \item{matchNA}{Should \code{NA}'s be matched? Default
   behaviour mimics the behaviour of base
   \code{\link[base]{match}}, meaning that \code{NA} matches
-  \code{NA} (which is inconsistent with \code{dist} or
-  \code{stringdist}).}
+  \code{NA} (see also the note on \code{NA} handling
+  below).}
 
   \item{method}{Matching algorithm to use. See
   \code{\link{stringdist}}.}
 
-  \item{weight}{parameters for matching algorithm See
-  \code{\link{stringdist}}.}
+  \item{useBytes}{Perform byte-wise comparison.
+  \code{useBytes=TRUE} is faster but may yield different
+  results depending on character encoding. See also
+  \code{\link{stringdist}}, under encoding issues.}
+
+  \item{weight}{Weight parameters for matching algorithm
+  See \code{\link{stringdist}}.}
 
   \item{maxDist}{Elements in \code{x} will not be matched
   with elements of \code{table} if their distance is larger
@@ -55,6 +63,12 @@
 \description{
   Approximate string matching equivalents of \code{R}'s
   native \code{\link[base]{match}} and \code{\%in\%}.
+}
+\details{
+  \code{ain} is currently defined as
+
+  \code{ain(x,table,...) <- function(x,table,...) amatch(x,
+  table, nomatch=0,...) > 0}
 }
 \section{Note on \code{NA} handling}{
   \code{R}'s native \code{\link[base]{match}} function

@@ -15,7 +15,9 @@ test_that("simple test and multiple edge cases",{
   expect_equal(amatch(NA,NA, method="osa",matchNA=FALSE, nomatch=7L), 7L)
   expect_equal(amatch("aa","bb", method="osa",maxDist=1), NA_integer_)
   expect_equal(amatch("aa","bb", method="osa",maxDist=1), NA_integer_)
+  expect_equal(amatch(c("m","fem"),c("male","female"),method="osa",maxDist=Inf), c(1,2))
 })
+
 
 
 context("amatch: Damerau-Levenshtein")
@@ -34,6 +36,7 @@ test_that("simple test and multiple edge cases",{
   expect_equal(amatch(NA,NA, method="dl",matchNA=FALSE,nomatch=7L), 7L)
   expect_equal(amatch("aa","bb", method="dl",maxDist=1), NA_integer_)
   expect_equal(amatch("aa","bb", method="dl",maxDist=1), NA_integer_)
+  expect_equal(amatch(c("m","fem"),c("male","female"),method="dl",maxDist=Inf), c(1,2))
 })
 
 context("amatch: Hamming")
@@ -66,12 +69,13 @@ test_that("simple test and multiple edge cases",{
   expect_equal(amatch(NA,NA, method="jw",matchNA=FALSE), NA_integer_)
   expect_equal(amatch(NA,NA, method="jw",matchNA=FALSE,nomatch=0L), 0L)
   expect_equal(amatch(NA,NA, method="jw",matchNA=FALSE,nomatch=7L), 7L)
+  expect_equal(amatch(c("m","fem"),c("male","female"),method="jw",maxDist=Inf), c(1,2))
 })
 
 context("amatch: Longest Common Substring")
 
 test_that("simple test and multiple edge cases",{
-  expect_equal(amatch("aa", c("ba","bb"), method="lcs",maxDist=1L), 1L)
+  expect_equal(amatch("aa", c("ba","bb"), method="lcs",maxDist=2L), 1L)
   expect_equal(amatch("aa",c("bb","bb"), method="lcs",maxDist=1L), NA_integer_)
   expect_equal(amatch("aa",c("bbb"), method="lcs",maxDist=2L), NA_integer_)
   expect_equal(amatch("bbb",c("aa"), method="lcs",maxDist=2L), NA_integer_)
@@ -83,6 +87,7 @@ test_that("simple test and multiple edge cases",{
   expect_equal(amatch(NA,NA, method="lcs",matchNA=FALSE), NA_integer_)
   expect_equal(amatch(NA,NA, method="lcs",matchNA=FALSE,nomatch=0L), 0L)
   expect_equal(amatch(NA,NA, method="lcs",matchNA=FALSE,nomatch=7L), 7L)
+
 })
 
 
@@ -101,6 +106,7 @@ test_that("simple test and multiple edge cases",{
   expect_equal(amatch(NA,NA, method="lv",matchNA=FALSE), NA_integer_)
   expect_equal(amatch(NA,NA, method="lv",matchNA=FALSE,nomatch=0L), 0L)
   expect_equal(amatch(NA,NA, method="lv",matchNA=FALSE,nomatch=7L), 7L)
+  expect_equal(amatch(c("m","fem"),c("male","female"),method="lv",maxDist=Inf), c(1,2))
 })
 
 context("amatch: qgrams")
@@ -117,3 +123,32 @@ test_that("simple test and multiple edge cases",{
   expect_equal(amatch(NA,NA, method="qgram",matchNA=FALSE,nomatch=0L), 0L)
   expect_equal(amatch(NA,NA, method="qgram",matchNA=FALSE,nomatch=7L), 7L)
 })
+
+context("amatch: useBytes")
+
+test_that("bytewise matching differs from character wise matching",{
+  x <- paste0('Mot',intToUtf8(0x00F6),'rhead') 
+  y <- c('bastard','Motorhead') 
+  jwdist <- round(1-(1/3)*(8/9 + 8/10 + 1),3)
+
+  expect_equal(amatch(x, y, method='dl', maxDist=2, useBytes=TRUE), 2);
+  expect_equal(amatch(x, y, method='dl', maxDist=1, nomatch=0L, useBytes=TRUE), 0L);
+  expect_equal(amatch(x, x, method='hamming',maxDist=1L, useBytes=TRUE),1); 
+  expect_equal(amatch(x, y, method='hamming',nomatch=0L,useBytes=TRUE), 0L);
+  expect_equal(amatch(x, y, method='jw', maxDist=1.0, useBytes=TRUE), 2);
+  expect_equal(amatch(x, y, method='jw', maxDist=jwdist-0.01, nomatch=0L, useBytes=TRUE), 0L);
+  expect_equal(amatch(x, y, method='lcs',maxDist=3, useBytes=TRUE),2L); 
+  expect_equal(amatch(x, y, method='lcs',maxDist=2, useBytes=TRUE, nomatch=0L), 0L);
+  expect_equal(amatch(x, y, method='lv',maxDist=2, useBytes=TRUE),2L); 
+  expect_equal(amatch(x, y, method='lv',maxDist=1, useBytes=TRUE, nomatch=0L), 0L);
+  expect_equal(amatch(x, y, method='osa',maxDist=2, useBytes=TRUE),2L); 
+  expect_equal(amatch(x, y, method='osa',maxDist=1, useBytes=TRUE, nomatch=0L), 0L);
+  expect_equal(amatch(x, y, method='qgram',maxDist=7, q=3, useBytes=TRUE),2L); 
+  expect_equal(amatch(x, y, method='qgram',maxDist=6, q=3, useBytes=TRUE, nomatch=0L), 0L);
+
+
+})
+
+
+
+
