@@ -3,6 +3,6 @@
 \alias{stringdist-package}
 \title{A package for string distance calculation}
 \description{
-  A package for string distance calculation
+A package for string distance calculation
 }
 

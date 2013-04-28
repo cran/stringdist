@@ -11,13 +11,12 @@ Description: Implements an approximate string matching version of R's native
     (damerau-levenshtein, hamming, levenshtein, optimal sting alignment),
     qgrams (q-gram, cosine, jaccard distance) or heuristic metrics (jaro,
     jaro-winkler).
-Version: 0.7.0
-Depends: parallel
+Version: 0.7.2
+Depends: R (>= 2.15.3), parallel
 URL: https://github.com/markvanderloo/stringdist
 Date: 2013-04-28
 Suggests: testthat
-Collate: 'amatch.R' 'qgrams.R' 'stringdist.R' 'utils.R'
-Packaged: 2013-09-06 14:55:12 UTC; mark
+Packaged: 2014-03-02 13:08:32 UTC; mark
 NeedsCompilation: yes
 Repository: CRAN
-Date/Publication: 2013-09-06 17:30:40
+Date/Publication: 2014-03-02 15:51:30

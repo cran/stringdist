@@ -3,13 +3,12 @@
 \alias{amatch}
 \title{Approximate string matching}
 \usage{
-  amatch(x, table, nomatch = NA_integer_, matchNA = TRUE,
-    method = c("osa", "lv", "dl", "hamming", "lcs", "qgram", "cosine", "jaccard", "jw"),
-    useBytes = FALSE,
-    weight = c(d = 1, i = 1, s = 1, t = 1), maxDist = 0.1,
-    q = 1, p = 0)
+amatch(x, table, nomatch = NA_integer_, matchNA = TRUE, method = c("osa",
+  "lv", "dl", "hamming", "lcs", "qgram", "cosine", "jaccard", "jw"),
+  useBytes = FALSE, weight = c(d = 1, i = 1, s = 1, t = 1), maxDist = 0.1,
+  q = 1, p = 0)
 
-  ain(x, table, ...)
+ain(x, table, ...)
 }
 \arguments{
   \item{x}{vector: elements to be approximately matched:
@@ -52,23 +51,22 @@
   \code{nomatch})}
 }
 \value{
-  \code{amatch} returns the position of the closest match
-  of \code{x} in \code{table}.  When multiple matches with
-  the same smallest distance metric exist, the first one is
-  returned.  \code{ain} returns a \code{logical} vector of
-  length \code{length(x)} indicating wether an element of
-  \code{x} approximately matches an element in
-  \code{table}.
+\code{amatch} returns the position of the closest match of
+\code{x} in \code{table}.  When multiple matches with the
+same smallest distance metric exist, the first one is
+returned.  \code{ain} returns a \code{logical} vector of
+length \code{length(x)} indicating wether an element of
+\code{x} approximately matches an element in \code{table}.
 }
 \description{
-  Approximate string matching equivalents of \code{R}'s
-  native \code{\link[base]{match}} and \code{\%in\%}.
+Approximate string matching equivalents of \code{R}'s
+native \code{\link[base]{match}} and \code{\%in\%}.
 }
 \details{
-  \code{ain} is currently defined as
+\code{ain} is currently defined as
 
-  \code{ain(x,table,...) <- function(x,table,...) amatch(x,
-  table, nomatch=0,...) > 0}
+\code{ain(x,table,...) <- function(x,table,...) amatch(x,
+table, nomatch=0,...) > 0}
 }
 \section{Note on \code{NA} handling}{
   \code{R}'s native \code{\link[base]{match}} function

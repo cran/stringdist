@@ -3,17 +3,14 @@
 \alias{stringdistmatrix}
 \title{Compute distance metrics between strings}
 \usage{
-  stringdist(a, b,
-    method = c("osa", "lv", "dl", "hamming", "lcs", "qgram", "cosine", "jaccard", "jw"),
-    useBytes = FALSE,
-    weight = c(d = 1, i = 1, s = 1, t = 1), maxDist = Inf,
-    q = 1, p = 0)
+stringdist(a, b, method = c("osa", "lv", "dl", "hamming", "lcs", "qgram",
+  "cosine", "jaccard", "jw"), useBytes = FALSE, weight = c(d = 1, i = 1, s =
+  1, t = 1), maxDist = Inf, q = 1, p = 0)
 
-  stringdistmatrix(a, b,
-    method = c("osa", "lv", "dl", "hamming", "lcs", "qgram", "cosine", "jaccard", "jw"),
-    useBytes = FALSE,
-    weight = c(d = 1, i = 1, s = 1, t = 1), maxDist = Inf,
-    q = 1, p = 0, ncores = 1, cluster = NULL)
+stringdistmatrix(a, b, method = c("osa", "lv", "dl", "hamming", "lcs",
+  "qgram", "cosine", "jaccard", "jw"), useBytes = FALSE, weight = c(d = 1, i
+  = 1, s = 1, t = 1), maxDist = Inf, q = 1, p = 0, ncores = 1,
+  cluster = NULL)
 }
 \arguments{
   \item{a}{R object (target); will be converted by
@@ -41,12 +38,13 @@
   completely when \code{method='hamming'}, \code{'qgram'},
   \code{'cosine'}, \code{'Jaccard'}, or \code{'lcs'}.}
 
-  \item{maxDist}{Maximum string distance for edit-like
-  distances, in some cases computation is stopped when
-  \code{maxDist} is reached.  \code{maxDist=Inf} means
-  calculation goes on untill the distance is computed. Only
-  applies to \code{method='qgram'}, \code{'cosine'},
-  \code{'jaccard'} and \code{method='jw'}.}
+  \item{maxDist}{[DEPRECATED AND WILL BE REMOVED] Maximum
+  string distance for edit-like distances, in some cases
+  computation is stopped when \code{maxDist} is reached.
+  \code{maxDist=Inf} means calculation goes on untill the
+  distance is computed. Does not apply to
+  \code{method='qgram'}, \code{'cosine'}, \code{'jaccard'}
+  and \code{method='jw'}.}
 
   \item{q}{Size of the \eqn{q}-gram; must be nonnegative.
   Only applies to \code{method='qgram'}, \code{'jaccard'}
@@ -68,17 +66,17 @@
   not \code{NULL}, \code{ncores} is ignored.}
 }
 \value{
-  For \code{stringdist}, a vector with string distances of
-  size \code{max(length(a),length(b))}.  For
-  \code{stringdistmatrix}, a \code{length(a)xlength(b)}
-  \code{matrix}. The returned distance is nonnegative if it
-  can be computed, \code{NA} if any of the two argument
-  strings is \code{NA} and \code{Inf} when it cannot be
-  computed or \code{maxDist} is exceeded. See details for
-  the meaning of \code{Inf} for the various algorithms.
+For \code{stringdist}, a vector with string distances of
+size \code{max(length(a),length(b))}.  For
+\code{stringdistmatrix}, a \code{length(a)xlength(b)}
+\code{matrix}. The returned distance is nonnegative if it
+can be computed, \code{NA} if any of the two argument
+strings is \code{NA} and \code{Inf} when it cannot be
+computed or \code{maxDist} is exceeded. See details for the
+meaning of \code{Inf} for the various algorithms.
 }
 \description{
-  Compute distance metrics between strings
+Compute distance metrics between strings
 }
 \section{Details}{
   \code{stringdist} computes pairwise string distances
@@ -196,14 +194,15 @@
 
   If \code{bytes=TRUE}, the input strings are treated as if
   each byte was a single character. This may be
-  significantly faster since it avoids conversion through
-  \code{utf8} (up to a factor of 3, for strings of 5-25
-  characters). However, results may depend on the (possibly
-  multibyte) character encoding scheme and note that
-  \code{R}'s internal encoding scheme is OS-dependent. If
-  you're sure that all your input is \code{ASCII}, you can
-  safely set \code{useBytes=TRUE} to profit from the speed
-  gain on any platform.
+  significantly faster since it avoids conversion of
+  \code{utf8} to integer with \code{\link[base]{utf8ToInt}}
+  (up to a factor of 3, for strings of 5-25 characters).
+  However, results may depend on the (possibly multibyte)
+  character encoding scheme and note that \code{R}'s
+  internal encoding scheme is OS-dependent. If you're sure
+  that all your input is \code{ASCII}, you can safely set
+  \code{useBytes=TRUE} to profit from the speed gain on any
+  platform.
 
   See base \code{R}'s \code{\link[base]{Encoding}} and
   \code{\link[base]{iconv}} documentation for details on
@@ -212,18 +211,20 @@
 
 \section{Paralellization}{
   The \code{stringdistmatrix} function uses
-  \code{\link[parallel]{makeCluster}} to generate a cluster
-  and compute the distance matrix in parallel when
-  \code{ncores>1}. As the cluster is local, the
+  \code{\link[parallel]{makeCluster}} to create a local
+  cluster and compute the distance matrix in parallel when
+  \code{ncores>1}. The cluster is terminated after the
+  matrix has been computed. As the cluster is local, the
   \code{ncores} parameter should not be larger than the
   number of cores on your machine. Use
   \code{\link[parallel]{detectCores}} to check the number
   of cores available. Alternatively, you can create a
-  cluster by yourself, using
-  \code{\link[parallel]{makeCluster}} and pass that to
-  \code{stringdistmatrix}. There is overhead in creating
-  clusters, so creating the cluster yourself is a good
-  choice if you want to call \code{stringdistmatrix}
+  cluster using \code{\link[parallel]{makeCluster}} and
+  pass that to \code{stringdistmatrix} (through the
+  \code{cluster} argument. This allows you to reuse the
+  cluster setup for other calculations. There is overhead
+  in creating clusters, so creating the cluster yourself is
+  a good choice if you want to call \code{stringdistmatrix}
   multiple times, for example in a loop.
 }
 \examples{
@@ -299,43 +300,43 @@ stringdist('MARTHA','MATHRA',method='jw',p=0.1)
 
 }
 \references{
-  \itemize{ \item{ R.W. Hamming (1950). Error detecting and
-  Error Correcting codes, The Bell System Technical Journal
-  29, 147-160 } \item{ V.I. Levenshtein. (1960). Binary
-  codes capable of correcting deletions, insertions, and
-  reversals. Soviet Physics Doklady 10 707-711. } \item{
-  F.J. Damerau (1964) A technique for computer detection
-  and correction of spelling errors. Communications of the
-  ACM 7 171-176. } \item{ An extensive overview of (online)
-  string matching algorithms is given by G. Navarro (2001).
-  A guided tour to approximate string matching, ACM
-  Computing Surveys 33 31-88. } \item{ Many algorithms are
-  available in pseudocode from wikipedia:
-  \url{http://en.wikipedia.org/wiki/Damerau-Levenshtein_distance}.
-  } \item{The code for the full Damerau-Levenshtein
-  distance was adapted from Nick Logan's
-  \href{https://github.com/ugexe/Text--Levenshtein--Damerau--XS/blob/master/damerau-int.c}{public
-  github repository}. }
+\itemize{ \item{ R.W. Hamming (1950). Error detecting and
+Error Correcting codes, The Bell System Technical Journal
+29, 147-160 } \item{ V.I. Levenshtein. (1960). Binary codes
+capable of correcting deletions, insertions, and reversals.
+Soviet Physics Doklady 10 707-711. } \item{ F.J. Damerau
+(1964) A technique for computer detection and correction of
+spelling errors. Communications of the ACM 7 171-176. }
+\item{ An extensive overview of (online) string matching
+algorithms is given by G. Navarro (2001).  A guided tour to
+approximate string matching, ACM Computing Surveys 33
+31-88. } \item{ Many algorithms are available in pseudocode
+from wikipedia:
+\url{http://en.wikipedia.org/wiki/Damerau-Levenshtein_distance}.
+} \item{The code for the full Damerau-Levenshtein distance
+was adapted from Nick Logan's
+\href{https://github.com/ugexe/Text--Levenshtein--Damerau--XS/blob/master/damerau-int.c}{public
+github repository}. }
 
-  \item{ A good reference for qgram distances is E. Ukkonen
-  (1992), Approximate string matching with q-grams and
-  maximal matches. Theoretical Computer Science, 92,
-  191-211. }
+\item{ A good reference for qgram distances is E. Ukkonen
+(1992), Approximate string matching with q-grams and
+maximal matches. Theoretical Computer Science, 92, 191-211.
+}
 
-  \item{\href{http://en.wikipedia.org/wiki/Jaro\%E2\%80\%93Winkler_distance}{Wikipedia}
-  describes the Jaro-Winker distance used in this package.
-  Unfortunately, there seems to be no single definition for
-  the Jaro distance in literature. For example Cohen,
-  Ravikumar and Fienberg (Proceeedings of IIWEB03, Vol 47,
-  2003) report a different matching window for characters
-  in strings \code{a} and \code{b}. }
+\item{\href{http://en.wikipedia.org/wiki/Jaro\%E2\%80\%93Winkler_distance}{Wikipedia}
+describes the Jaro-Winker distance used in this package.
+Unfortunately, there seems to be no single definition for
+the Jaro distance in literature. For example Cohen,
+Ravikumar and Fienberg (Proceeedings of IIWEB03, Vol 47,
+2003) report a different matching window for characters in
+strings \code{a} and \code{b}. }
 
-  \item{Raffael Vogler wrote a nice
-  \href{http://www.joyofdata.de/blog/comparison-of-string-distance-algorithms/}{blog}
-  comparing different string distances in this package.
+\item{Raffael Vogler wrote a nice
+\href{http://www.joyofdata.de/blog/comparison-of-string-distance-algorithms/}{blog}
+comparing different string distances in this package.
 
-  }
+}
 
-  }
+}
 }
 
