@@ -21,6 +21,10 @@ test_that("Edge cases in OSA method",{
 
 test_that("max distance is obeyed",{
    expect_equal(stringdist("aa","bb",method='osa',maxDist=1),-1)
+   # Thanks to Daniel Deckhard pointing to this bug
+   expect_equal(stringdist("abc","abc",method='osa',maxDist=1), 0)
+   expect_equal(stringdist("","abc",method='osa',maxDist=1), -1)
+   expect_equal(stringdist("abc","",method='osa',maxDist=2), -1)
 })
 
 test_that("Shortest argument is recycled",{
@@ -61,6 +65,9 @@ test_that("Edge cases in Levenshtein method",{
 
 test_that("max distance is obeyed",{
    expect_equal(stringdist("aa","bb",method='lv',maxDist=1),-1)
+   expect_equal(stringdist("abc","abc",method='lv',maxDist=1), 0)
+   expect_equal(stringdist("","abc",method='lv',maxDist=1), -1)
+   expect_equal(stringdist("abc","",method='lv',maxDist=2), -1)
 })
 
 test_that("Shortest argument is recycled",{
@@ -98,6 +105,9 @@ test_that("Edge cases in DL method",{
 
 test_that("max distance is obeyed",{
    expect_equal(stringdist("aa","bb",method='dl',maxDist=1),-1)
+   expect_equal(stringdist("abc","abc",method='dl',maxDist=1), 0)
+   expect_equal(stringdist("","abc",method='dl',maxDist=2), -1)
+   expect_equal(stringdist("abc","",method='dl',maxDist=2), -1)
 })
 
 test_that("Shortest argument is recycled",{
@@ -127,14 +137,44 @@ test_that("NA's are handled correctly",{
    expect_true(is.na(stringdist(NA ,NA ,method='dl')))
 })
 
+context("Longest Common Substring")
+test_that("Edge cases in LCS method",{
+   expect_equal(stringdist( "", "",method='lcs'),0)
+   expect_equal(stringdist( "","a",method='lcs'),1)
+   expect_equal(stringdist("a", "",method='lcs'),1)
+   expect_equal(stringdist("a","a",method='lcs'),0)
+})
+
+test_that("max distance is obeyed",{
+   expect_equal(stringdist("aa","bb",method='lcs',maxDist=1),-1)
+   expect_equal(stringdist("abc","abc",method='lcs',maxDist=1), 0)
+   expect_equal(stringdist("","abc",method='lcs',maxDist=1), -1)
+   expect_equal(stringdist("abc","",method='lcs',maxDist=1), -1)
+})
+
+test_that("Shortest argument is recycled",{
+   expect_equal(stringdist(c('a','b'),'a',method='lcs'),c(0,2))
+   expect_equal(stringdist('a',c('a','b'),method='lcs'),c(0,2))
+})
+
+
+test_that("NA's are handled correctly",{
+   expect_true(is.na(stringdist(NA ,'a',method='lcs')))
+   expect_true(is.na(stringdist('a',NA ,method='lcs')))
+   expect_true(is.na(stringdist(NA ,NA ,method='lcs')))
+})
+
 
 context("Hamming distance")
 
 test_that("Edge cases in DL method",{
    expect_equal(stringdist( "", "",method='h'),0)
-   expect_error(stringdist( "","a",method='h'))
-   expect_error(stringdist("a", "",method='h'))
    expect_equal(stringdist("a","a",method='h'),0)
+})
+
+test_that("Unequal string lengths",{
+  expect_equal(stringdist("aa","a",method="h"),-1)
+  expect_equal(stringdist("a","aa",method="h"),-1)
 })
 
 test_that("max distance is obeyed",{
@@ -152,6 +192,38 @@ test_that("NA's are handled correctly",{
    expect_true(is.na(stringdist(NA ,NA ,method='h')))
 })
 
+context("Q-gram distance")
+
+test_that("Edge cases in qgram method",{
+   expect_equal(stringdist( "", "",method='qgram',q=0), 0)
+   expect_equal(stringdist( "", "",method='qgram',q=1),-1)
+   expect_equal(stringdist( "","a",method='qgram',q=1),-1)
+   expect_equal(stringdist("a", "",method='qgram',q=1),-1)
+   expect_equal(stringdist("a","a",method='qgram',q=1), 0)
+   expect_error(stringdist("aa","bb",method='qgram',q=-2))
+})
+
+
+test_that("Shortest argument is recycled",{
+   expect_equal(stringdist(c('a','b'),'a',method='qgram',q=1),c(0,2))
+   expect_equal(stringdist('a',c('a','b'),method='qgram',q=1),c(0,2))
+})
+
+test_that("NA's are handled correctly",{
+   expect_true(is.na(stringdist(NA ,'a',method='qgram')))
+   expect_true(is.na(stringdist('a',NA ,method='qgram')))
+   expect_true(is.na(stringdist(NA ,NA ,method='qgram')))
+})
+
+
+test_that("binary tree is cleaned up properly in qgram-tree",{
+# explanation: the binary tree storing unique q-grams and q-gram counts is re-used when looping
+# over string pairs. (this is not the case with the unsorted lookup table in 'qgram')
+  d <- stringdist('abcde',c('edcba','edcba'),method='qgram',q=2)
+  expect_equal(d[1],d[2])
+})
+
+
 context("stringdistmatrix")
 test_that("dimensions work out",{
     expect_equivalent(
@@ -159,4 +231,5 @@ test_that("dimensions work out",{
         c(3,2)
     )
 })
+
 

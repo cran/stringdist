@@ -15,6 +15,7 @@
 
 /* ugexe@cpan.org (Nick Logan)    */
 
+#define USE_RINTERNALS
 #include <R.h>
 #include <Rdefines.h>
 #include "utils.h"
@@ -91,13 +92,26 @@ static double distance(
       dictionary *dict,
       double *scores
     ){
-  if ( x==0 ) return y;
-  if ( y==0 ) return x;
+
+  if (x == 0){
+    if ( maxDistance > 0 && maxDistance < y ){
+      return -1;
+    } else {
+      return (double) y;
+    }
+  }
+  if (y == 0){
+    if (maxDistance > 0 && maxDistance < x){
+      return -1;
+    } else {
+      return (double) x;
+    }
+  }
 
   unsigned int swapCount, targetCharCount,i,j;
   double delScore, insScore, subScore, swapScore;
   unsigned int score_ceil = x + y;
-
+  double colmin;
   /* intialize matrix start values */
   scores[0] = score_ceil;  
   scores[1 * (y + 2) + 0] = score_ceil;
@@ -113,8 +127,8 @@ static double distance(
     uniquePush(dict,src[i]);
     scores[(i+1) * (y + 2) + 1] = i;
     scores[(i+1) * (y + 2) + 0] = score_ceil;
-
     swapCount = 0;
+    colmin = (double) x + y + 1;
     for(j=1;j<=y;j++){
       if(i == 1) {
         uniquePush(dict,tgt[j]);
@@ -133,11 +147,12 @@ static double distance(
         swapCount = j;
         scores[(i+1) * (y + 2) + (j + 1)] = min2(scores[i * (y + 2) + j], swapScore);
       } 
+      colmin = min2(colmin,scores[(i+1)*(y+2) + (j+1)]);
     }
-
     /* We will return -1 here if the */
-    /* current score > maxDistance   */
-    if(maxDistance != 0 && maxDistance < scores[(i+1) * (y + 2) + (y+1)]) {
+    /* current minimum > maxDistance   */
+    if(maxDistance > 0 && maxDistance < colmin) {
+
       reset_dictionary(dict);
       return -1;
     }
@@ -188,8 +203,8 @@ SEXP R_dl(SEXP a, SEXP b, SEXP weight, SEXP maxDistance){
       continue;
     }
     y[k] = distance(
-      INTEGER(VECTOR_ELT(a,i)),
-      INTEGER(VECTOR_ELT(b,j)),
+     (unsigned int *) INTEGER(VECTOR_ELT(a,i)),
+     (unsigned int *) INTEGER(VECTOR_ELT(b,j)),
       length(VECTOR_ELT(a,i)),
       length(VECTOR_ELT(b,j)),
       w,

@@ -1,4 +1,5 @@
 
+#define USE_RINTERNALS
 #include <stdlib.h>
 #include <R.h>
 #include <Rdefines.h>
@@ -10,9 +11,24 @@
  * - Extended with custom weights and maxDistance
  */
 static double osa(unsigned int *a, int na, unsigned int *b, int nb, double *weight, double maxDistance, double *scores){
-   int i, j;
-   int I = na+1, J = nb+1;
-   double sub, tran;
+  if (na == 0){
+    if ( maxDistance > 0 && maxDistance < nb ){
+      return -1;
+    } else {
+      return (double) nb;
+    }
+  }
+  if (nb == 0){
+    if (maxDistance > 0 && maxDistance < na){
+      return -1;
+    } else {
+      return (double) na;
+    }
+  }
+
+  int i, j;
+  int I = na+1, J = nb+1;
+  double sub, tran, colmin;
 
    for ( i = 0; i < I; ++i ){
       scores[i] = i;
@@ -22,6 +38,7 @@ static double osa(unsigned int *a, int na, unsigned int *b, int nb, double *weig
    }
 
    for ( i = 1; i <= na; ++i ){
+      colmin = (double) na + nb + 1;
       for ( j = 1; j <= nb; ++j ){
          if (a[i-1] == b[j-1]){
             sub = 0;
@@ -39,10 +56,12 @@ static double osa(unsigned int *a, int na, unsigned int *b, int nb, double *weig
          if ( i>1 && j>1 && a[i-1] == b[j-2] && a[i-2] == b[j-1] ){
             scores[i + I*j] = min2(scores[i + I*j], scores[i-2+I*(j-2)]) + tran; // transposition
          }
-         if ( maxDistance > 0 && scores[i + I*j] > maxDistance ){
+         colmin = min2(colmin, scores[i + I*j]);
+      }
+         if ( maxDistance > 0 && colmin > maxDistance ){
+         
             return -1;
          }
-      }
    }
    return(scores[I*J-1]);
 }
@@ -61,14 +80,14 @@ SEXP R_osa(SEXP a, SEXP b, SEXP weight, SEXP maxDistance){
    double *w = REAL(weight);
    double maxDist = REAL(maxDistance)[0];
 
-   scores = malloc( (max_length(a) + 1) * (max_length(b) + 1) * sizeof(double)); 
+   scores = (double *) malloc( (max_length(a) + 1) * (max_length(b) + 1) * sizeof(double)); 
    if ( scores == NULL ){
       error("%s\n","unable to allocate enough memory for workspace");
    }
 
    // output vector
    int nt = (na > nb) ? na : nb;   
-   int i,j,k;
+   int i,j;
    SEXP yy;
    PROTECT(yy = allocVector(REALSXP, nt));
    double *y = REAL(yy);   
@@ -81,9 +100,9 @@ SEXP R_osa(SEXP a, SEXP b, SEXP weight, SEXP maxDistance){
          continue;
       }
       y[k] = osa(
-         INTEGER(VECTOR_ELT(a,i)), 
+        (unsigned int *) INTEGER(VECTOR_ELT(a,i)), 
          length(VECTOR_ELT(a,i)), 
-         INTEGER(VECTOR_ELT(b,j)), 
+        (unsigned int *) INTEGER(VECTOR_ELT(b,j)), 
          length(VECTOR_ELT(b,j)), 
          w,
          maxDist,

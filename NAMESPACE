@@ -1,3 +1,4 @@
+export(qgrams)
 export(stringdist)
 export(stringdistmatrix)
 useDynLib(stringdist)
