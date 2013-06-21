@@ -1,4 +1,5 @@
 
+#define USE_RINTERNALS
 #include <stdlib.h>
 #include <R.h>
 #include <Rdefines.h>
@@ -9,12 +10,26 @@
  * - Simplified from restricted DL pseudocode at http://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance
  * - Extended with custom weights and maxDistance
  */
-static double osa(unsigned int *a, int na, unsigned int *b, int nb, double *weight, double maxDistance, double *scores){
-   if (na == 0) return(nb);
-   if (nb == 0) return(na);
+static double lv(unsigned int *a, int na, unsigned int *b, int nb, double *weight, double maxDistance, double *scores){
+  if (na == 0){
+    if ( maxDistance > 0 && maxDistance < nb ){
+      return -1;
+    } else {
+      return (double) nb;
+    }
+  }
+  if (nb == 0){
+    if (maxDistance > 0 && maxDistance < na){
+      return -1;
+    } else {
+      return (double) na;
+    }
+  }
+  
+ 
    int i, j;
    int I = na+1, J = nb+1;
-   double sub;
+   double sub, colmin;
 
    for ( i = 0; i < I; ++i ){
       scores[i] = i;
@@ -24,6 +39,7 @@ static double osa(unsigned int *a, int na, unsigned int *b, int nb, double *weig
    }
 
    for ( i = 1; i <= na; ++i ){
+      colmin = (double) na + nb + 1;
       for ( j = 1; j <= nb; ++j ){
          sub = (a[i-1] == b[j-1]) ? 0 : weight[2];
          scores[i + I*j] = min3( 
@@ -31,9 +47,10 @@ static double osa(unsigned int *a, int na, unsigned int *b, int nb, double *weig
             scores[i   + I*(j-1)] + weight[1],     // insertion
             scores[i-1 + I*(j-1)] + sub            // substitution
          );
-         if ( maxDistance > 0 && scores[i + I*j] > maxDistance ){
-            return -1;
-         }
+        colmin = min2(colmin, scores[i + I*j]);
+      }
+      if ( maxDistance > 0 && colmin > maxDistance ){
+         return -1;
       }
    }
    return(scores[I*J-1]);
@@ -53,14 +70,14 @@ SEXP R_lv(SEXP a, SEXP b, SEXP weight, SEXP maxDistance){
    double *w = REAL(weight);
    double maxDist = REAL(maxDistance)[0];
 
-   scores = malloc((max_length(a) + 1) * (max_length(b) + 1) * sizeof(double)); 
+   scores = (double *) malloc((max_length(a) + 1) * (max_length(b) + 1) * sizeof(double)); 
    if ( scores == NULL ){
       error("%s\n","unable to allocate enough memory for workspace");
    }
 
    // output vector
    int nt = (na > nb) ? na : nb;   
-   int i,j,k;
+   int i,j;
    SEXP yy;
    PROTECT(yy = allocVector(REALSXP, nt));
    double *y = REAL(yy);   
@@ -72,10 +89,10 @@ SEXP R_lv(SEXP a, SEXP b, SEXP weight, SEXP maxDistance){
          y[k] = NA_REAL;
          continue;
       }
-      y[k] = osa(
-         INTEGER(VECTOR_ELT(a,i)), 
+      y[k] = lv(
+       (unsigned int *) INTEGER(VECTOR_ELT(a,i)), 
          length(VECTOR_ELT(a,i)), 
-         INTEGER(VECTOR_ELT(b,j)), 
+       (unsigned int *) INTEGER(VECTOR_ELT(b,j)), 
          length(VECTOR_ELT(b,j)), 
          w,
          maxDist,
