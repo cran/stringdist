@@ -31,11 +31,12 @@
   \code{'qgram'}, \code{'cosine'}, \code{'Jaccard'},
   \code{'lcs'} or \code{'jw'}.}
 
-  \item{maxDist}{Maximum string distance before calculation
-  is stopped, \code{maxDist=0} means calculation goes on
-  untill the distance is computed. Ignored for
-  \code{method='qgram'}, \code{'cosine'}, \code{'jaccard'}
-  and \code{method='jw'}.}
+  \item{maxDist}{Maximum string distance for edit-like
+  distances, in some cases computation is stopped when
+  \code{maxDist} is reached.  \code{maxDist=Inf} means
+  calculation goes on untill the distance is computed.
+  Ignored for \code{method='qgram'}, \code{'cosine'},
+  \code{'jaccard'} and \code{method='jw'}.}
 
   \item{q}{size of the \eqn{q}-gram, must be nonnegative.
   Ignored for all but \code{method='qgram'},
