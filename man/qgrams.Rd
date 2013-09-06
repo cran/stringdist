@@ -1,14 +1,26 @@
 \name{qgrams}
 \alias{qgrams}
-\title{Get a table of qgram counts from a character vector.}
+\title{Get a table of qgram counts from one or more character vectors.}
 \usage{
-  qgrams(..., q = 1L)
+  qgrams(..., q = 1L, useBytes = FALSE,
+    useNames = !useBytes)
 }
 \arguments{
   \item{...}{any number of (named) arguments, that will be
   coerced to character with \code{as.character}.}
 
   \item{q}{size of q-gram, must be non-negative.}
+
+  \item{useBytes}{Determine byte-wise qgrams.
+  \code{useBytes=TRUE} is faster but may yield different
+  results depending on character encoding. For \code{ASCII}
+  it is identical. See also \code{\link{stringdist}} under
+  Encoding issues.}
+
+  \item{useNames}{Add q-grams as column names. If
+  \code{useBytes=useNames=TRUE}, the q-byte sequences are
+  represented as 2 hexadecimal numbers per byte, separated
+  by a vertical bar (\code{|}).}
 }
 \value{
   A table with \eqn{q}-gram counts. Detected \eqn{q}-grams
@@ -16,14 +28,16 @@
   no argument names were provided, they will be generated.
 }
 \description{
-  Get a table of qgram counts from a character vector.
+  Get a table of qgram counts from one or more character
+  vectors.
 }
 \section{Details}{
-  The input is converted to \code{character}. Each element
-  is converted to \code{utf8} and than to \code{integer} as
-  in \code{\link{stringdist}}. Next,the data is passed to
-  the underlying routine. row names of the output array
-  (i.e. the qgrams) are encoded in \code{utf8}.
+  The input is converted to \code{character}. If
+  \code{useBytes=TRUE}, each element is converted to
+  \code{utf8} and then to \code{integer} as in
+  \code{\link{stringdist}}. Next,the data is passed to the
+  underlying routine. row names of the output array (i.e.
+  the qgrams) are encoded in \code{utf8}.
 
   Strings with less than \code{q} characters and elements
   containing \code{NA} are skipped. Using \code{q=0}
@@ -41,11 +55,24 @@ qgrams(rep('hello world',2),q=3)
 x <- c('hello', 'world')
 lapply(x,qgrams, q=3)
 
+# output rows may be named, and you can pass any number of character vectors
+x <- "I will not buy this record, it is scratched"
+y <- "My hovercraft is full of eels"
+z <- c("this", "is", "a", "dead","parrot")
+qgrams(A = x, B = y, C = z,q=2)
+
+# a tonque twister, showing the effects of useBytes and useNames
+x <- "peter piper picked a peck of pickled peppers"
+qgrams(x, q=2) 
+qgrams(x, q=2, useNames=FALSE) 
+qgrams(x, q=2, useBytes=TRUE)
+qgrams(x, q=2, useBytes=TRUE, useNames=TRUE)
+
 
 
 
 }
 \seealso{
-  \code{\link{stringdist}}.
+  \code{\link{stringdist}}, \code{\link{amatch}}
 }
 

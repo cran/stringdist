@@ -31,6 +31,10 @@ test_that("max distance is obeyed",{
    expect_equal(stringdist("abc","",method='osa',maxDist=2), Inf)
 })
 
+test_that("transpositions are found",{
+  expect_equal(stringdist("ab","ba",method='osa'),1)
+})
+
 test_that("Shortest argument is recycled",{
    expect_equal(stringdist(c('a','b'),'a',method='osa'),c(0,1))
    expect_equal(stringdist('a',c('a','b'),method='osa'),c(0,1))
@@ -296,6 +300,19 @@ test_that("Extended examples work",{
     round(1 - stringdist("crate","trace",metho='jw'),8),
     round((3/5 + 3/5 + (3-0)/3)/3,8)
   )
+  # idem, with weights
+  expect_equal(
+    round(1 - stringdist("crate","trace",metho='jw',weight=c(0.5,1,1)),8),
+    round((0.5*3/5 + 3/5 + (3-0)/3)/3,8)
+  )
+  expect_equal(
+    round(1 - stringdist("crate","trace",metho='jw',weight=c(1,0.5,1)),8),
+    round((3/5 + 0.5*3/5 + (3-0)/3)/3,8)
+  )
+  expect_equal(
+    round(1 - stringdist("crate","trace",metho='jw',weight=c(1,1,0.5)),8),
+    round((3/5 + 3/5 + 0.5*(3-0)/3)/3,8)
+  )
 
   # Other cases
   # 4 matches, no transpositions, short first string with non-matching character.
@@ -350,6 +367,84 @@ test_that("dimensions work out",{
         dim(stringdistmatrix(c("aa","bb","cc"),c("aa","cc"))),
         c(3,2)
     )
+    expect_equivalent(
+        dim(stringdistmatrix(c("aa","bb","cc"),c("aa","cc"),useBytes=TRUE)),
+        c(3,2)
+    )
+})
+
+test_that('stringdistmatrix yields correct distances',{
+  x <- paste0('Mot',intToUtf8(0x00F6),'rhead') # correct spelling
+  y <- 'Motorhead' # Pissing off Lemmy.
+  v <- c(x,y)
+  d11 <- stringdist(x,x)
+  d12 <- stringdist(x,y)
+  d22 <- stringdist(y,y)
+  expect_equal(
+    stringdistmatrix(v,v)
+    , matrix(c(d11,d12,d12,d22),nrow=2,ncol=2)
+  )
+  d11 <- stringdist(x,x,useBytes=TRUE)
+  d12 <- stringdist(x,y,useBytes=TRUE)
+  d22 <- stringdist(y,y,useBytes=TRUE)
+  expect_equal(
+    stringdistmatrix(v,v,useBytes=TRUE)
+    , matrix(c(d11,d12,d12,d22),nrow=2,ncol=2)
+  )
+
+
+
+})
+context("stringdist: useBytes")
+test_that("useBytes gets NA",{
+  expect_true(is.na(stringdist('a',NA,method='osa',useBytes=TRUE)))
+  expect_true(is.na(stringdist('a',NA,method='lv',useBytes=TRUE)))
+  expect_true(is.na(stringdist('a',NA,method='dl',useBytes=TRUE)))
+  expect_true(is.na(stringdist('a',NA,method='hamming',useBytes=TRUE)))
+})
+
+test_that("useBytes translates correctly to numeric",{
+  # smoketest
+  set.seed(1)
+  x <- sapply(sample(5:25,10,replace=TRUE),function(x) paste(letters[x],collapse=""))
+  y <- sample(x)
+  expect_equal(
+    stringdist(x,y,method='osa',useBytes=TRUE)
+  , stringdist(x,y,method='osa',useBytes=FALSE))
+  expect_equal(
+    stringdist(x,y,method='lv',useBytes=TRUE)
+  , stringdist(x,y,method='lv',useBytes=FALSE))
+  expect_equal(
+    stringdist(x,y,method='dl',useBytes=TRUE)
+  , stringdist(x,y,method='dl',useBytes=FALSE))
+  expect_equal(
+    stringdist(x,y,method='hamming',useBytes=TRUE)
+  , stringdist(x,y,method='hamming',useBytes=FALSE))
+  expect_equal(
+    stringdist(x,y,method='jw',useBytes=TRUE)
+  , stringdist(x,y,method='jw',useBytes=FALSE))
+  expect_equal(
+    stringdist(x,y,method='lcs',useBytes=TRUE)
+  , stringdist(x,y,method='lcs',useBytes=FALSE))
+  expect_equal(
+    stringdist(x,y,method='qgram',q=3,useBytes=TRUE)
+  , stringdist(x,y,method='qgram',q=3,useBytes=FALSE))
+
+})
+
+test_that("useBytes really analyses bytes",{
+  x <- paste0('Mot',intToUtf8(0x00F6),'rhead') # correct spelling
+  y <- 'Motorhead' # Pissing off Lemmy.
+  expect_equal(stringdist(x,y,method='dl',useBytes=TRUE),  2)
+  expect_equal(stringdist(x,y,method='hamming',useBytes=TRUE),  Inf)
+  expect_equal(stringdist(x,y,method='osa',useBytes=TRUE), 2)
+  expect_equal(stringdist(x,y,method='lv',useBytes=TRUE),  2)
+  expect_equal(
+    round(stringdist(x,y,method='jw',useBytes=TRUE),3),
+    round(1-(1/3)*(8/9 + 8/10 + 1),3)
+  )
+  expect_equal(stringdist(x,y,method='lcs',useBytes=TRUE),  3)
+  expect_equal(stringdist(x,y,method='qgram',q=3,useBytes=TRUE),  7)
 })
 
 
