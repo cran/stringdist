@@ -2,8 +2,8 @@
 \alias{qgrams}
 \title{Get a table of qgram counts from one or more character vectors.}
 \usage{
-  qgrams(..., q = 1L, useBytes = FALSE,
-    useNames = !useBytes)
+qgrams(..., .list = NULL, q = 1L, useBytes = FALSE,
+  useNames = !useBytes)
 }
 \arguments{
   \item{...}{any number of (named) arguments, that will be
@@ -21,15 +21,19 @@
   \code{useBytes=useNames=TRUE}, the q-byte sequences are
   represented as 2 hexadecimal numbers per byte, separated
   by a vertical bar (\code{|}).}
+
+  \item{.list}{Will be concatenated with the \code{...}
+  argument(s). Usefull for adding character vectors named
+  \code{'q'} or \code{'useNames'}.}
 }
 \value{
-  A table with \eqn{q}-gram counts. Detected \eqn{q}-grams
-  are column names and the argument names as row names. If
-  no argument names were provided, they will be generated.
+A table with \eqn{q}-gram counts. Detected \eqn{q}-grams
+are column names and the argument names as row names. If no
+argument names were provided, they will be generated.
 }
 \description{
-  Get a table of qgram counts from one or more character
-  vectors.
+Get a table of qgram counts from one or more character
+vectors.
 }
 \section{Details}{
   The input is converted to \code{character}. If
@@ -73,6 +77,6 @@ qgrams(x, q=2, useBytes=TRUE, useNames=TRUE)
 
 }
 \seealso{
-  \code{\link{stringdist}}, \code{\link{amatch}}
+\code{\link{stringdist}}, \code{\link{amatch}}
 }
 

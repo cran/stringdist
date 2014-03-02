@@ -83,7 +83,7 @@
 #'
 #' If \code{bytes=TRUE}, the input strings are treated as if each byte was a
 #' single character. This may be significantly faster since it avoids
-#' conversion through \code{utf8} (up to a factor of 3, for strings of 5-25 characters).
+#' conversion of \code{utf8} to integer with \code{\link[base]{utf8ToInt}} (up to a factor of 3, for strings of 5-25 characters).
 #' However, results may depend on the (possibly multibyte)  character encoding scheme
 #' and note that \code{R}'s internal encoding scheme is OS-dependent. 
 #' If you're sure that all your input is \code{ASCII},  you can safely set 
@@ -93,10 +93,12 @@
 #' encoding. 
 #'
 #' @section Paralellization:
-#' The \code{stringdistmatrix} function uses \code{\link[parallel]{makeCluster}} to generate a cluster and compute the
-#' distance matrix in parallel when \code{ncores>1}. As the cluster is local, the \code{ncores} parameter should not be larger than the number
+#' The \code{stringdistmatrix} function uses \code{\link[parallel]{makeCluster}} to create a local cluster and compute the
+#' distance matrix in parallel when \code{ncores>1}. The cluster is terminated after the matrix has been computed. 
+#' As the cluster is local, the \code{ncores} parameter should not be larger than the number
 #' of cores on your machine. Use \code{\link[parallel]{detectCores}} to check the number of cores available. Alternatively,
-#' you can create a cluster by yourself, using \code{\link[parallel]{makeCluster}} and pass that to \code{stringdistmatrix}.
+#' you can create a cluster using \code{\link[parallel]{makeCluster}} and pass that to \code{stringdistmatrix} (through the \code{cluster} argument. 
+#' This allows you to reuse the cluster setup for other calculations.
 #' There is overhead in creating clusters, so creating the cluster yourself is a good choice if you want to call \code{stringdistmatrix} 
 #' multiple times, for example in a loop.
 #'
@@ -155,8 +157,8 @@
 #'   of \code{a}, characters from \code{b} and the transposition weight, in that order.
 #'   Weights must be positive and not exceed 1. \code{weight} is
 #'   ignored completely when \code{method='hamming'}, \code{'qgram'}, \code{'cosine'}, \code{'Jaccard'}, or \code{'lcs'}. 
-#' @param maxDist  Maximum string distance for edit-like distances, in some cases computation is stopped when \code{maxDist} is reached. 
-#'    \code{maxDist=Inf} means calculation goes on untill the distance is computed. Only applies to \code{method='qgram'}, \code{'cosine'}, \code{'jaccard'} and
+#' @param maxDist  [DEPRECATED AND WILL BE REMOVED] Maximum string distance for edit-like distances, in some cases computation is stopped when \code{maxDist} is reached. 
+#'    \code{maxDist=Inf} means calculation goes on untill the distance is computed. Does not apply to \code{method='qgram'}, \code{'cosine'}, \code{'jaccard'} and
 #'    \code{method='jw'}.
 #' @param q  Size of the \eqn{q}-gram; must be nonnegative. Only applies to \code{method='qgram'}, \code{'jaccard'} or \code{'cosine'}.
 #' @param p Penalty factor for Jaro-Winkler distance. The valid range for \code{p} is \code{0 <= p <= 0.25}. 
@@ -242,6 +244,7 @@ stringdistmatrix <- function(a, b,
       , is.logical(useBytes)
       , ifelse(method %in% c('osa','dl'), length(weight) >= 4, TRUE)
       , ifelse(method %in% c('lv','jw') , length(weight) >= 3, TRUE)
+      , ncores > 0
   )
   if (!useBytes){
     a <- char2int(a)
@@ -252,13 +255,14 @@ stringdistmatrix <- function(a, b,
     x <- sapply(b,do_dist, USE.NAMES=FALSE, a,method,weight,maxDist, q, p)
   } else {
     if ( is.null(cluster) ){
-      cl <- makeCluster(ncores)
+      cluster <- makeCluster(ncores)
+      turn_cluster_off <- TRUE
     } else {
       stopifnot(inherits(cluster, 'cluster'))
-      cl <- cluster
+      turn_cluster_off <- FALSE
     }
     x <- parSapply(cluster, b,do_dist,a,method,weight,maxDist, q, p)
-    if (is.null(cluster)) stopCluster(cl)
+    if (turn_cluster_off) stopCluster(cluster)
   }
   as.matrix(x)
 }
