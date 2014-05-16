@@ -31,17 +31,18 @@
  * Parameter 'guard; indicates which elements of b have been matched before to avoid
  * matching two instances of the same character to the same position in b (which we treat read-only).
  */
-static int match_int(unsigned int a, unsigned int *b, int *guard, int width){
-
+static int match_int(unsigned int a, unsigned int *b, int *guard, int width, int m){
+//Rprintf("width : %d \n",width);
   int i = 0;
   while ( 
-      b[i] && 
       ( i < width ) && 
       ( b[i] != a || (b[i] == a && guard[i])) 
   ){
     ++i;
   }
-  if ( b[i] == a ){
+  // ugly edge case workaround
+  if ( !(m && i==width) && b[i] == a ){
+//Rprintf("  guard[%d] %d b[%d]: %d\n",i,guard[i],i,b[i]);
     guard[i] = 1;
     return i;
   } 
@@ -82,7 +83,6 @@ static double jaro_winkler(
 
   // edge case
   if ( x == 0 && y == 0 ) return 0;
-
   // swap arguments if necessary, so we always loop over the shortest string
   if ( x > y ){
     unsigned int *c = b;
@@ -92,8 +92,7 @@ static double jaro_winkler(
     y = x;
     x = z;
   }
-
-  memset(work,0,sizeof(int) * y);
+  memset(work,0, sizeof(int) * y);
 
   // max transposition distance
   int M = MAX(MAX(x,y)/2 - 1,0);
@@ -101,18 +100,21 @@ static double jaro_winkler(
   double t = 0.0;
   // number of matches 
   double m = 0.0;
-  
+  int max_reached; 
   int left, right, J, jmax=0;
   
   for ( int i=0; i < x; ++i ){
     left  = MAX(0, i-M);
-
     if ( left >= y ){
       J = -1;
     } else {
       right = MIN(y, i+M);
-      J =  match_int(a[i], b + left, work + left, right - left);
+      // ugly workaround: I should rewrite match_int.
+      max_reached = (right == y) ? 1 : 0;
+      J =  match_int(a[i], b + left, work + left, right - left, max_reached);
+//Rprintf("i:%d, a[i] :%d, left - right: %d - %d, J: %d\n",i,a[i],left,right,J);
     }
+
     if ( J >= 0 ){
       ++m;
       t += (J + left < jmax ) ? 1 : 0; 

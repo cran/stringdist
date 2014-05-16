@@ -5,6 +5,8 @@
 #' @useDynLib stringdist
 {}
 
+
+  
 #' Compute distance metrics between strings
 #'
 #' @section Details:
@@ -89,8 +91,16 @@
 #' If you're sure that all your input is \code{ASCII},  you can safely set 
 #' \code{useBytes=TRUE} to profit from the speed gain on any platform. 
 #'
-#' See base \code{R}'s \code{\link[base]{Encoding}} and \code{\link[base]{iconv}} documentation for details on how \code{R} handles character
-#' encoding. 
+#' See base \code{R}'s \code{\link[base]{Encoding}} and
+#' \code{\link[base]{iconv}} documentation for details on how \code{R} handles
+#' character encoding. 
+#'
+#' @section Unicode normalisation:
+#' In \code{utf-8}, the same (accented) character may be represented as several byte sequences. For example, an u-umlaut
+#' can be represented with a single byte code or as a byte code representing \code{'u'} followed by a modifier byte code
+#' that adds the umlaut. The \href{http://cran.r-project.org/web/packages/stringi/}{stringi} package 
+#' of Gagolevski and Tartanus offers unicode normalisation tools. 
+#'
 #'
 #' @section Paralellization:
 #' The \code{stringdistmatrix} function uses \code{\link[parallel]{makeCluster}} to create a local cluster and compute the
@@ -102,8 +112,16 @@
 #' There is overhead in creating clusters, so creating the cluster yourself is a good choice if you want to call \code{stringdistmatrix} 
 #' multiple times, for example in a loop.
 #'
+#' @section Citation:
+#' If you would like to cite this package, please cite the R-journal paper: 
+#' \itemize{
+#' \item{M.P.J. van der Loo (2014). The \code{stringdist} package for approximate string matching. 
+#'  R Journal 6 (accepted for publication)}
+#' }
+#' Or use \code{citation('stringdist')} to get a bibtex item.
 #'
 #' @references
+#'
 #' \itemize{
 #' \item{
 #'    R.W. Hamming (1950). Error detecting and Error Correcting codes, The Bell System Technical Journal 29, 147-160
@@ -113,6 +131,11 @@
 #' }
 #' \item{
 #' F.J. Damerau (1964) A technique for computer detection and correction of spelling errors. Communications of the ACM 7 171-176.
+#' }
+#' \item{
+#'  An extensive overview of offline string matching algorithms is given by L. Boytsov (2011). Indexing
+#'  methods for approximate dictionary searching: comparative analyses. ACM Journal of experimental
+#'  algorithmics 16 1-88.
 #' }
 #' \item{
 #'  An extensive overview of (online) string matching algorithms is given by G. Navarro (2001). 
@@ -157,9 +180,9 @@
 #'   of \code{a}, characters from \code{b} and the transposition weight, in that order.
 #'   Weights must be positive and not exceed 1. \code{weight} is
 #'   ignored completely when \code{method='hamming'}, \code{'qgram'}, \code{'cosine'}, \code{'Jaccard'}, or \code{'lcs'}. 
-#' @param maxDist  [DEPRECATED AND WILL BE REMOVED] Maximum string distance for edit-like distances, in some cases computation is stopped when \code{maxDist} is reached. 
-#'    \code{maxDist=Inf} means calculation goes on untill the distance is computed. Does not apply to \code{method='qgram'}, \code{'cosine'}, \code{'jaccard'} and
-#'    \code{method='jw'}.
+#' @param maxDist  [DEPRECATED AND MAY BE REMOVED FOR THIS FUNCTION] For the
+#' moment, this parameter is here only for backward compatibility. It does not
+#' offer any speed gain. 
 #' @param q  Size of the \eqn{q}-gram; must be nonnegative. Only applies to \code{method='qgram'}, \code{'jaccard'} or \code{'cosine'}.
 #' @param p Penalty factor for Jaro-Winkler distance. The valid range for \code{p} is \code{0 <= p <= 0.25}. 
 #'  If \code{p=0} (default), the Jaro-distance is returned. Applies only to \code{method='jw'}.
@@ -180,6 +203,7 @@ stringdist <- function(a, b,
   weight=c(d=1,i=1,s=1,t=1), 
   maxDist=Inf, q=1, p=0
 ){
+
   a <- as.character(a)
   b <- as.character(b)
   if (length(a) == 0 || length(b) == 0){ 
@@ -228,6 +252,7 @@ stringdistmatrix <- function(a, b,
   maxDist=Inf, q=1, p=0,
   ncores=1, cluster=NULL
 ){
+  
   a <- as.character(a)
   b <- as.character(b)
   if (length(a) == 0 || length(b) == 0){ 
@@ -280,6 +305,8 @@ char2int <- function(x){
 
 
 do_dist <- function(a, b, method, weight, maxDist, q, p){
+#print(a)
+#print(b)
   if (maxDist==Inf) maxDist <- 0L;
   switch(method,
     osa     = .Call('R_osa'   , a, b, as.double(weight), as.double(maxDist)),

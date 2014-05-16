@@ -18,10 +18,10 @@
 #' The \code{amatch} function mimics the behaviour of \code{\link[base]{match}} by default: \code{NA} is 
 #' matched with \code{NA} and with nothing else. Note that this is inconsistent with the behaviour of \code{\link{stringdist}}
 #' since \code{stringdist} yields \code{NA} when at least one of the arguments is \code{NA}. The same inconsistency exists
-#' between \code{\link[base]{match}} and \code{\link[stats]{dist}}. However, in \code{amatch} this behaviour
+#' between \code{\link[base]{match}} and \code{\link[utils]{adist}}. In \code{amatch} this behaviour
 #' can be controlled by setting \code{matchNA=FALSE}. In that case, if any of the arguments in \code{x} 
 #' is \code{NA}, the \code{nomatch} value is returned, regardless of whether \code{NA} is present in \code{table}.
-#'
+#' In \code{\link[base]{match}} the behaviour can be controlled by setting the \code{incomparables} option.
 #'
 #' @param x vector: elements to be approximately matched: will be coerced to \code{character}.
 #' @param table vector: lookup table for matching. Will be coerced to \code{character}.
@@ -71,8 +71,11 @@ amatch <- function(x, table, nomatch=NA_integer_, matchNA=TRUE,
       , matchNA %in% c(TRUE,FALSE)
       , maxDist > 0
       , is.logical(useBytes)
+      , ifelse(method %in% c('osa','dl'), length(weight) >= 4, TRUE)
+      , ifelse(method %in% c('lv','jw') , length(weight) >= 3, TRUE)
   )
   if (maxDist==Inf) maxDist <- 0L;
+  if (method == 'jw') weight <- weight[c(2,1,3)]
   switch(method,
     osa     = .Call('R_match_osa'       , x, table, as.integer(nomatch), as.integer(matchNA), as.double(weight), as.double(maxDist)),
     lv      = .Call('R_match_lv'        , x, table, as.integer(nomatch), as.integer(matchNA), as.double(weight), as.double(maxDist)),
