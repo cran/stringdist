@@ -21,15 +21,15 @@ test_that("Edge cases in OSA method",{
    expect_equal(stringdist("a","a",method='osa'),0)
 })
 
-#test_that("max distance is obeyed",{
-#   expect_equal(stringdist("aa","bb",method='osa',maxDist=1), Inf)
-#   # Thanks to Daniel Deckhard pointing to this bug
-#   expect_equal(stringdist("abc","abc",method='osa',maxDist=1), 0)
-#   expect_equal(stringdist("aa","bbb",method='osa',maxDist=2), Inf)
-#   expect_equal(stringdist("bbb","aa",method='osa',maxDist=2), Inf)
-#   expect_equal(stringdist("","abc",method='osa',maxDist=1), Inf)
-#   expect_equal(stringdist("abc","",method='osa',maxDist=2), Inf)
-#})
+test_that("max distance is obeyed",{
+   expect_equal(stringdist("aa","bb",method='osa',maxDist=1), Inf)
+   # Thanks to Daniel Deckhard pointing to this bug
+   expect_equal(stringdist("abc","abc",method='osa',maxDist=1), 0)
+   expect_equal(stringdist("aa","bbb",method='osa',maxDist=2), Inf)
+   expect_equal(stringdist("bbb","aa",method='osa',maxDist=2), Inf)
+   expect_equal(stringdist("","abc",method='osa',maxDist=1), Inf)
+   expect_equal(stringdist("abc","",method='osa',maxDist=2), Inf)
+})
 
 test_that("transpositions are found",{
   expect_equal(stringdist("ab","ba",method='osa'),1)
@@ -72,14 +72,14 @@ test_that("Edge cases in Levenshtein method",{
    expect_equal(stringdist("a","a",method='lv'),0)
 })
 
-#test_that("max distance is obeyed",{
-#   expect_equal(stringdist("aa","bb",method='lv',maxDist=1), Inf)
-#   expect_equal(stringdist("abc","abc",method='lv',maxDist=1), 0)
-#   expect_equal(stringdist("","abc",method='lv',maxDist=1), Inf)
-#   expect_equal(stringdist("abc","",method='lv',maxDist=2), Inf)
-#   expect_equal(stringdist("aa","bbb",method='lv',maxDist=2), Inf)
-#   expect_equal(stringdist("bbb","aa",method='lv',maxDist=2), Inf)
-#})
+test_that("max distance is obeyed",{
+   expect_equal(stringdist("aa","bb",method='lv',maxDist=1), Inf)
+   expect_equal(stringdist("abc","abc",method='lv',maxDist=1), 0)
+   expect_equal(stringdist("","abc",method='lv',maxDist=1), Inf)
+   expect_equal(stringdist("abc","",method='lv',maxDist=2), Inf)
+   expect_equal(stringdist("aa","bbb",method='lv',maxDist=2), Inf)
+   expect_equal(stringdist("bbb","aa",method='lv',maxDist=2), Inf)
+})
 
 test_that("Shortest argument is recycled",{
    expect_equal(stringdist(c('a','b'),'a',method='lv'),c(0,1))
@@ -115,14 +115,14 @@ test_that("Edge cases in DL method",{
    expect_equal(stringdist("a","a",method='dl'),0)
 })
 
-#test_that("max distance is obeyed",{
-#   expect_equal(stringdist("aa","bb",method='dl',maxDist=1),Inf)
-#   expect_equal(stringdist("abc","abc",method='dl',maxDist=1), 0)
-#   expect_equal(stringdist("","abc",method='dl',maxDist=2), Inf)
-#   expect_equal(stringdist("abc","",method='dl',maxDist=2), Inf)
-#   expect_equal(stringdist("aa","bbb",method='dl',maxDist=2), Inf)
-#   expect_equal(stringdist("bbb","aa",method='dl',maxDist=2), Inf)
-#})
+test_that("max distance is obeyed",{
+   expect_equal(stringdist("aa","bb",method='dl',maxDist=1),Inf)
+   expect_equal(stringdist("abc","abc",method='dl',maxDist=1), 0)
+   expect_equal(stringdist("","abc",method='dl',maxDist=2), Inf)
+   expect_equal(stringdist("abc","",method='dl',maxDist=2), Inf)
+   expect_equal(stringdist("aa","bbb",method='dl',maxDist=2), Inf)
+   expect_equal(stringdist("bbb","aa",method='dl',maxDist=2), Inf)
+})
 
 test_that("Shortest argument is recycled",{
    expect_equal(stringdist(c('a','b'),'a',method='dl'),c(0,1))
@@ -160,14 +160,14 @@ test_that("Edge cases in LCS method",{
    expect_equal(stringdist("a","a",method='lcs'),0)
 })
 
-#test_that("max distance is obeyed",{
-#   expect_equal(stringdist("aa","bb",method='lcs',maxDist=1),Inf)
-#   expect_equal(stringdist("abc","abc",method='lcs',maxDist=1), 0)
-#   expect_equal(stringdist("","abc",method='lcs',maxDist=1), Inf)
-#   expect_equal(stringdist("abc","",method='lcs',maxDist=1), Inf)
-#   expect_equal(stringdist("aa","bbb",method='lcs',maxDist=2), Inf)
-#   expect_equal(stringdist("bbb","aa",method='lcs',maxDist=2), Inf)
-#})
+test_that("max distance is obeyed",{
+   expect_equal(stringdist("aa","bb",method='lcs',maxDist=1),Inf)
+   expect_equal(stringdist("abc","abc",method='lcs',maxDist=1), 0)
+   expect_equal(stringdist("","abc",method='lcs',maxDist=1), Inf)
+   expect_equal(stringdist("abc","",method='lcs',maxDist=1), Inf)
+   expect_equal(stringdist("aa","bbb",method='lcs',maxDist=2), Inf)
+   expect_equal(stringdist("bbb","aa",method='lcs',maxDist=2), Inf)
+})
 
 test_that("Shortest argument is recycled",{
    expect_equal(stringdist(c('a','b'),'a',method='lcs'),c(0,2))
@@ -194,9 +194,9 @@ test_that("Unequal string lengths",{
   expect_equal(stringdist("a","aa",method="h"),Inf)
 })
 
-#test_that("max distance is obeyed",{
-#   expect_equal(stringdist("aa","bb",method='h',maxDist=1),Inf)
-#})
+test_that("max distance is obeyed",{
+   expect_equal(stringdist("aa","bb",method='h',maxDist=1),Inf)
+})
 
 test_that("Shortest argument is recycled",{
    expect_equal(stringdist(c('a','b'),'a',method='h'),c(0,1))
@@ -255,6 +255,9 @@ test_that("cosine distance computes correctly",{
     round(stringdist("aaa","abc",method="cosine",q=2),8),
     1.0
   )
+  # numerical accuracy test (thanks to Ben Haller)
+  # note that 1 - 2/(sqrt(2)*sqrt(2)) != 0, so this used to give ~2.2E-16. 
+  expect_equal( stringdist("ab","ab",method="cosine"),0.0,tolerance=0.0 ) 
 })
 
 context("Jaccard distance")
@@ -448,5 +451,64 @@ test_that("useBytes really analyses bytes",{
   expect_equal(stringdist(x,y,method='lcs',useBytes=TRUE),  3)
   expect_equal(stringdist(x,y,method='qgram',q=3,useBytes=TRUE),  7)
 })
+
+
+
+### -------------------------------------------------------------
+context("Soundex distance")
+
+test_that("",{
+  expect_equal(stringdist("", "0000",method='soundex'),0)
+  expect_equal(stringdist("john","jan",method='soundex'),0)
+  expect_equal(stringdist("schoen","son",method='soundex'),0)
+  expect_equal(stringdist("ssssss","sa",method='soundex'),0)
+  expect_equal(stringdist("bfpv","ba",method='soundex'),0)
+  # cgjkqsxz receive same code
+  expect_equal(stringdist("cgjkqsxz","ca",method='soundex'),0)
+  # dt receive same code
+  expect_equal(stringdist("dt","da",method='soundex'),0)  
+  # mn receive same code; l has seperate code
+  expect_equal(stringdist("lmn","lam",method='soundex'),0)  
+  # h and w are ignored
+  expect_equal(stringdist("rhw","r",method='soundex'),0)  
+  # vowels are removed
+  expect_equal(stringdist("raeiouym","rm",method='soundex'),0)  
+  # non-letters are ignores
+  expect_equal(stringdist("r00d","rt",method='soundex'),0)  
+  # consonants are not merged when a vowel in between
+  expect_equal(stringdist("sock", "sck", method='soundex'),1)
+})
+
+test_that("Shortest argument is recycled",{
+  expect_equal(stringdist(c('a','b'),'a',method='soundex'),c(0,1))
+  expect_equal(stringdist('a',c('a','b'),method='soundex'),c(0,1))
+})
+
+test_that("NA's are handled correctly",{
+  expect_true(is.na(stringdist(NA ,'a',method='soundex')))
+  expect_true(is.na(stringdist('a',NA ,method='soundex')))
+  expect_true(is.na(stringdist(NA ,NA ,method='soundex')))
+})
+
+test_that("non-printable ascii and non-ascii encoding is detected",{
+  ouml <- intToUtf8("0x00F6")
+  # non-ascii within string
+  x <- paste0("Mot",ouml,"rhead")
+  y <- paste0(ouml,"zzy")
+  # non-printable ascii's in string
+  z <- paste0("\r","hello","\t")
+  # business as usual
+  expect_equal(stringdist('Ozzy','Lemmy',method='soundex'),1)
+  # first argument triggers warning
+  expect_warning(stringdist(x,'Lemmy',method='soundex'))
+  expect_warning(stringdist(y,'Ozzy',method='soundex'))
+  expect_warning(stringdist(z,'Ozzy',method='soundex'))
+  
+  # second argument triggers warning
+  expect_warning(stringdist('Lemmy',x,method='soundex'))
+  expect_warning(stringdist('Ozzy',y,method='soundex'))
+  expect_warning(stringdist('Ozzy',z,method='soundex'))
+})
+
 
 

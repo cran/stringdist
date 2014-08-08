@@ -47,7 +47,7 @@
 #' @example ../examples/amatch.R
 #' @export
 amatch <- function(x, table, nomatch=NA_integer_, matchNA=TRUE, 
-  method=c("osa","lv","dl","hamming","lcs","qgram","cosine","jaccard", "jw"), 
+  method=c("osa","lv","dl","hamming","lcs","qgram","cosine","jaccard", "jw", "soundex"), 
   useBytes = FALSE,
   weight=c(d=1,i=1,s=1,t=1), 
   maxDist=0.1, q=1, p=0){
@@ -74,7 +74,7 @@ amatch <- function(x, table, nomatch=NA_integer_, matchNA=TRUE,
       , ifelse(method %in% c('osa','dl'), length(weight) >= 4, TRUE)
       , ifelse(method %in% c('lv','jw') , length(weight) >= 3, TRUE)
   )
-  if (maxDist==Inf) maxDist <- 0L;
+  if (maxDist==Inf && !method %in% c('osa','lv','dl','hm','lcs') ) maxDist <- 0L;
   if (method == 'jw') weight <- weight[c(2,1,3)]
   switch(method,
     osa     = .Call('R_match_osa'       , x, table, as.integer(nomatch), as.integer(matchNA), as.double(weight), as.double(maxDist)),
@@ -85,7 +85,8 @@ amatch <- function(x, table, nomatch=NA_integer_, matchNA=TRUE,
     qgram   = .Call('R_match_qgram_tree', x, table, as.integer(nomatch), as.integer(matchNA), as.integer(q), as.double(maxDist), 0L),
     cosine  = .Call('R_match_qgram_tree', x, table, as.integer(nomatch), as.integer(matchNA), as.integer(q), as.double(maxDist), 1L),
     jaccard = .Call('R_match_qgram_tree', x, table, as.integer(nomatch), as.integer(matchNA), as.integer(q), as.double(maxDist), 2L),
-    jw      = .Call('R_match_jw'        , x, table, as.integer(nomatch), as.integer(matchNA), as.double(p), as.double(weight), as.double(maxDist))
+    jw      = .Call('R_match_jw'        , x, table, as.integer(nomatch), as.integer(matchNA), as.double(p), as.double(weight), as.double(maxDist)),
+    soundex = .Call('R_match_soundex'   , x, table, as.integer(nomatch), as.integer(matchNA))
   )
 }
 
