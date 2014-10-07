@@ -1,39 +1,12 @@
 #' A package for string distance calculation
-#' 
+#'
 #' @name stringdist-package
 #' @docType package
 #' @useDynLib stringdist
-{}
-
-
-  
-#' Compute distance metrics between strings
+#' @import parallel
 #'
-#' @section Details:
-#' \code{stringdist} computes pairwise string distances between elements of \code{character} vectors 
-#' \code{a} and \code{b}, where the vector with less elements is recycled. 
-#' 
-#' \code{stringdistmatrix} computes the string distance matrix with rows according to
-#' \code{a} and columns according to \code{b}.
-#' 
-#' Currently, the following distance metrics are supported:
-#' \tabular{ll}{
-#'    \code{osa} \tab Optimal string aligment, (restricted Damerau-Levenshtein distance).\cr
-#'    \code{lv} \tab Levenshtein distance (as in R's native \code{\link[utils]{adist}}).\cr
-#'    \code{dl} \tab Full Damerau-Levenshtein distance.\cr
-#'    \code{hamming}  \tab Hamming distance (\code{a} and \code{b} must have same nr of characters).\cr
-#'    \code{lcs} \tab Longest common substring distance.\cr
-#'    \code{qgram} \tab \eqn{q}-gram distance. \cr
-#'    \code{cosine} \tab cosine distance between \eqn{q}-gram profiles \cr
-#'    \code{jaccard} \tab Jaccard distance between \eqn{q}-gram profiles \cr
-#'    \code{jw} \tab Jaro, or Jaro-Winker distance.\cr
-#'    \code{soundex} \tab Distance based on soundex encoding (see below)
-#' }
-#' 
-#' Precise descriptions of the algorithms are given in the R-journal paper (see Citation section).
-#' Below are some concise descriptions.
-#' 
-#' 
+#' @section Supported distances:
+#'
 #' The \bold{Hamming distance} (\code{hamming}) counts the number of 
 #' character substitutions that turns \code{b} into \code{a}. If \code{a} 
 #' and \code{b} have different number of characters or if \code{maxDist} is 
@@ -101,6 +74,71 @@
 #' in the ranges a-z and A-Z. A warning is emitted when non-printable or non-ascii
 #' characters are encountered. Also see \code{\link{printable_ascii}}.
 #'
+#' @references
+#'
+#' \itemize{
+#'
+#' \item{
+#'  Mark P.J. van der Loo (2014) Approximate text matching with the stringdist package. The R Journal 
+#'  6(1) pp 111-122.
+#' } 
+#' \item{
+#'  An extensive overview of offline string matching algorithms is given by L. Boytsov (2011). Indexing
+#'  methods for approximate dictionary searching: comparative analyses. ACM Journal of experimental
+#'  algorithmics 16 1-88.
+#' }
+#' \item{
+#'  An extensive overview of (online) string matching algorithms is given by G. Navarro (2001). 
+#'  A guided tour to approximate string matching, ACM Computing Surveys 33 31-88.
+#' }
+#' \item{
+#' Many algorithms are available in pseudocode from wikipedia: \url{http://en.wikipedia.org/wiki/Damerau-Levenshtein_distance}.
+#' }
+#'
+#' \item{
+#' A good reference for qgram distances is E. Ukkonen (1992), Approximate string matching with q-grams and maximal matches. 
+#' Theoretical Computer Science, 92, 191-211.
+#' }
+#'
+#' \item{\href{http://en.wikipedia.org/wiki/Jaro\%E2\%80\%93Winkler_distance}{Wikipedia} describes the Jaro-Winker
+#' distance used in this package. Unfortunately, there seems to be no single
+#'  definition for the Jaro distance in literature. For example Cohen, Ravikumar and Fienberg (Proceeedings of IIWEB03, Vol 47, 2003)
+#'  report a different matching window for characters in strings \code{a} and \code{b}. 
+#' }
+#'
+#'}
+#' 
+{}
+
+
+  
+#' Compute distance metrics between strings
+#'
+#' @section Details:
+#' \code{stringdist} computes pairwise string distances between elements of \code{character} vectors 
+#' \code{a} and \code{b}, where the vector with less elements is recycled. 
+#' 
+#' \code{stringdistmatrix} computes the string distance matrix with rows according to
+#' \code{a} and columns according to \code{b}.
+#' 
+#' Currently, the following distance metrics are supported:
+#' \tabular{ll}{
+#'    \code{osa} \tab Optimal string aligment, (restricted Damerau-Levenshtein distance).\cr
+#'    \code{lv} \tab Levenshtein distance (as in R's native \code{\link[utils]{adist}}).\cr
+#'    \code{dl} \tab Full Damerau-Levenshtein distance.\cr
+#'    \code{hamming}  \tab Hamming distance (\code{a} and \code{b} must have same nr of characters).\cr
+#'    \code{lcs} \tab Longest common substring distance.\cr
+#'    \code{qgram} \tab \eqn{q}-gram distance. \cr
+#'    \code{cosine} \tab cosine distance between \eqn{q}-gram profiles \cr
+#'    \code{jaccard} \tab Jaccard distance between \eqn{q}-gram profiles \cr
+#'    \code{jw} \tab Jaro, or Jaro-Winker distance.\cr
+#'    \code{soundex} \tab Distance based on soundex encoding (see below)
+#' }
+#' 
+#' A short description of these algorithms is proveded \link[=stringdist-package]{here}, or
+#' see the \href{http://journal.r-project.org/archive/2014-1/loo.pdf}{R Journal Paper} (external link) for
+#' more formal descriptions.
+#' 
 #' @section Encoding issues:
 #' If \code{bytes=FALSE}, input strings are re-encoded to \code{utf8} an then to \code{integer}
 #' vectors prior to the distance calculation (since the underlying \code{C}-code expects \code{unsigned int}s). 
@@ -137,58 +175,26 @@
 #' There is overhead in creating clusters, so creating the cluster yourself is a good choice if you want to call \code{stringdistmatrix} 
 #' multiple times, for example in a loop.
 #'
+#' @section Acknowledgement:
+#' The code for the full Damerau-Levenshtein distance was adapted from Nick Logan's
+#' \href{https://github.com/ugexe/Text--Levenshtein--Damerau--XS/blob/master/damerau-int.c}{public github repository}.
+#' 
+#'
 #' @section Citation:
-#' If you would like to cite this package, please cite the R-journal paper: 
+#' If you would like to cite this package, please cite the \href{http://journal.r-project.org/archive/2014-1/loo.pdf}{R Journal Paper}: 
 #' \itemize{
 #' \item{M.P.J. van der Loo (2014). The \code{stringdist} package for approximate string matching. 
 #'  R Journal 6(1) pp 111-122}
 #' }
 #' Or use \code{citation('stringdist')} to get a bibtex item.
 #'
-#' @references
+#' @section other:
 #'
 #' \itemize{
-#' \item{
-#'    R.W. Hamming (1950). Error detecting and Error Correcting codes, The Bell System Technical Journal 29, 147-160
-#'  }
-#' \item{
-#'  V.I. Levenshtein. (1960). Binary codes capable of correcting deletions, insertions, and reversals. Soviet Physics Doklady 10 707-711.
-#' }
-#' \item{
-#' F.J. Damerau (1964) A technique for computer detection and correction of spelling errors. Communications of the ACM 7 171-176.
-#' }
-#' \item{
-#'  An extensive overview of offline string matching algorithms is given by L. Boytsov (2011). Indexing
-#'  methods for approximate dictionary searching: comparative analyses. ACM Journal of experimental
-#'  algorithmics 16 1-88.
-#' }
-#' \item{
-#'  An extensive overview of (online) string matching algorithms is given by G. Navarro (2001). 
-#'  A guided tour to approximate string matching, ACM Computing Surveys 33 31-88.
-#' }
-#' \item{
-#' Many algorithms are available in pseudocode from wikipedia: \url{http://en.wikipedia.org/wiki/Damerau-Levenshtein_distance}.
-#' }
-#' \item{The code for the full Damerau-Levenshtein distance was adapted from Nick Logan's
-#'  \href{https://github.com/ugexe/Text--Levenshtein--Damerau--XS/blob/master/damerau-int.c}{public github repository}.
-#' }
-#'
-#' \item{
-#' A good reference for qgram distances is E. Ukkonen (1992), Approximate string matching with q-grams and maximal matches. 
-#' Theoretical Computer Science, 92, 191-211.
-#' }
-#'
-#' \item{\href{http://en.wikipedia.org/wiki/Jaro\%E2\%80\%93Winkler_distance}{Wikipedia} describes the Jaro-Winker
-#' distance used in this package. Unfortunately, there seems to be no single
-#'  definition for the Jaro distance in literature. For example Cohen, Ravikumar and Fienberg (Proceeedings of IIWEB03, Vol 47, 2003)
-#'  report a different matching window for characters in strings \code{a} and \code{b}. 
-#' }
 #'
 #' \item{Raffael Vogler wrote a nice 
 #' \href{http://www.joyofdata.de/blog/comparison-of-string-distance-algorithms/}{blog}
 #' comparing different string distances in this package.
-#'
-#'
 #'}
 #'
 #'}
@@ -211,12 +217,10 @@
 #' @param p Penalty factor for Jaro-Winkler distance. The valid range for \code{p} is \code{0 <= p <= 0.25}. 
 #'  If \code{p=0} (default), the Jaro-distance is returned. Applies only to \code{method='jw'}.
 #'
-#'
-#'
 #' @return For \code{stringdist},  a vector with string distances of size \code{max(length(a),length(b))}.
 #'  For \code{stringdistmatrix}, a \code{length(a)xlength(b)} \code{matrix}. The returned distance is
 #'  nonnegative if it can be computed, \code{NA} if any of the two argument strings is \code{NA} and \code{Inf}
-#'  when it cannot be computed or \code{maxDist} is exceeded. See details for the meaning of \code{Inf} for the various algorithms.
+#'  when \code{maxDist} is exceeded or, in case of the hamming distance, when the two compared strings have different length.
 #'  
 #'  
 #' @example ../examples/stringdist.R
@@ -258,6 +262,7 @@ stringdist <- function(a, b,
 }
 
 
+#' @param useNames Use input vectors as row and column names?
 #' @param ncores Number of cores to use. If \code{ncores>1}, a local cluster is
 #' created using \code{\link[parallel]{makeCluster}}. Parallelisation is over \code{b}, so 
 #' the speed gain by parallelisation is highest when \code{b} has less elements than \code{a}.
@@ -272,16 +277,22 @@ stringdist <- function(a, b,
 stringdistmatrix <- function(a, b, 
   method=c("osa","lv","dl","hamming","lcs","qgram","cosine","jaccard","jw","soundex"), 
   useBytes = FALSE,
-  weight=c(d=1,i=1,s=1,t=1), 
-  maxDist=Inf, q=1, p=0,
-  ncores=1, cluster=NULL
+  weight=c(d=1,i=1,s=1,t=1),  maxDist=Inf, q=1, p=0,
+  useNames=FALSE, ncores=1, cluster=NULL
 ){
   
   a <- as.character(a)
   b <- as.character(b)
+ 
   if (length(a) == 0 || length(b) == 0){ 
-   return(numeric(0))
+   return(matrix(numeric(0)))
   }
+
+  if (useNames){
+   rowns <- a
+   colns <- b
+  }
+
   method <- match.arg(method)
   stopifnot(
       all(is.finite(weight))
@@ -313,7 +324,7 @@ stringdistmatrix <- function(a, b,
     x <- parSapply(cluster, b,do_dist,a,method,weight,maxDist, q, p)
     if (turn_cluster_off) stopCluster(cluster)
   }
-  as.matrix(x)
+  if (!useNames)  as.matrix(x) else structure(as.matrix(x), dimnames=list(rowns,colns))
 }
 
 
