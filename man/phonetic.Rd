@@ -31,15 +31,6 @@ containing non-printable ascii or non-ascii characters may be system-dependent a
 not be trusted. If non-ascii or non-printable ascii charcters are encountered, a warning
 is emitted.
 }
-\section{Citation}{
-
-If you would like to cite this package, please cite the R-journal paper:
-\itemize{
-\item{M.P.J. van der Loo (2014). The \code{stringdist} package for approximate string matching.
- R Journal 6(1) pp. 111-122}
-}
-Or use \code{citation('stringdist')} to get a bibtex item.
-}
 \examples{
 # The following examples are from The Art of Computer Programming (part III, p. 395)
 # (Note that our algorithm is specified different from the one in TACP, see references.)
@@ -57,6 +48,6 @@ phonetic(c('Euler','Gauss','Hilbert','Knuth','Lloyd','Lukasiewicz','Wachs'),meth
 }
 }
 \seealso{
-\code{\link{printable_ascii}}
+\code{\link{printable_ascii}}, \code{\link{stringdist-package}}
 }
 

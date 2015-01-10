@@ -7,28 +7,29 @@
 \usage{
 stringdist(a, b, method = c("osa", "lv", "dl", "hamming", "lcs", "qgram",
   "cosine", "jaccard", "jw", "soundex"), useBytes = FALSE, weight = c(d = 1,
-  i = 1, s = 1, t = 1), maxDist = Inf, q = 1, p = 0)
+  i = 1, s = 1, t = 1), maxDist = Inf, q = 1, p = 0,
+  nthread = getOption("sd_num_thread"))
 
 stringdistmatrix(a, b, method = c("osa", "lv", "dl", "hamming", "lcs",
   "qgram", "cosine", "jaccard", "jw", "soundex"), useBytes = FALSE,
   weight = c(d = 1, i = 1, s = 1, t = 1), maxDist = Inf, q = 1, p = 0,
-  useNames = FALSE, ncores = 1, cluster = NULL)
+  useNames = FALSE, ncores = 1, cluster = NULL,
+  nthread = getOption("sd_num_thread"))
 }
 \arguments{
 \item{a}{R object (target); will be converted by \code{as.character}.}
 
 \item{b}{R object (source); will be converted by \code{as.character}.}
 
-\item{method}{Method for distance calculation. The default is \code{"osa"} (see details).}
+\item{method}{Method for distance calculation. The default is \code{"osa"}, see \code{\link{stringdist-metrics}}.}
 
-\item{useBytes}{Perform byte-wise comparison. \code{useBytes=TRUE} is faster but may yield different
-results depending on character encoding. See also below, under ``encoding issues''.}
+\item{useBytes}{Perform byte-wise comparison, see \code{\link{stringdist-encoding}}.}
 
 \item{weight}{For \code{method='osa'} or \code{'dl'}, the penalty for deletion, insertion, substitution and transposition, in that order.
 When \code{method='lv'}, the penalty for transposition is ignored. When \code{method='jw'}, the weights associated with characters
 of \code{a}, characters from \code{b} and the transposition weight, in that order.
 Weights must be positive and not exceed 1. \code{weight} is
-ignored completely when \code{method='hamming'}, \code{'qgram'}, \code{'cosine'}, \code{'Jaccard'}, or \code{'lcs'}.}
+ignored completely when \code{method='hamming'}, \code{'qgram'}, \code{'cosine'}, \code{'Jaccard'}, \code{'lcs'}, or \code{soundex}.}
 
 \item{maxDist}{[DEPRECATED AND WILL BE REMOVED] Currently kept for backward compatibility. It does not
 offer any speed gain. (In fact, it currently slows things down when set to anything different from \code{Inf}).}
@@ -36,122 +37,44 @@ offer any speed gain. (In fact, it currently slows things down when set to anyth
 \item{q}{Size of the \eqn{q}-gram; must be nonnegative. Only applies to \code{method='qgram'}, \code{'jaccard'} or \code{'cosine'}.}
 
 \item{p}{Penalty factor for Jaro-Winkler distance. The valid range for \code{p} is \code{0 <= p <= 0.25}.
- If \code{p=0} (default), the Jaro-distance is returned. Applies only to \code{method='jw'}.}
+If \code{p=0} (default), the Jaro-distance is returned. Applies only to \code{method='jw'}.}
+
+\item{nthread}{Maximum number of threads to use. By default, a sensible number of threads is chosen, see \code{\link{stringdist-parallelization}}.}
 
 \item{useNames}{Use input vectors as row and column names?}
 
-\item{ncores}{Number of cores to use. If \code{ncores>1}, a local cluster is
-created using \code{\link[parallel]{makeCluster}}. Parallelisation is over \code{b}, so
-the speed gain by parallelisation is highest when \code{b} has less elements than \code{a}.}
+\item{ncores}{[DEPRECATED AND WILL BE REMOVED]. Optionally use \code{nthreads} in stead. See below under parallelization of \code{stringdistmatrix}.}
 
-\item{cluster}{(Optional) a custom cluster, created with
-\code{\link[parallel]{makeCluster}}. If \code{cluster} is not \code{NULL},
-\code{ncores} is ignored.}
+\item{cluster}{(Optional) a custom cluster, created with \code{\link[parallel]{makeCluster}}.}
 }
 \value{
 For \code{stringdist},  a vector with string distances of size \code{max(length(a),length(b))}.
- For \code{stringdistmatrix}, a \code{length(a)xlength(b)} \code{matrix}. The returned distance is
- nonnegative if it can be computed, \code{NA} if any of the two argument strings is \code{NA} and \code{Inf}
+
+ For \code{stringdistmatrix}, a \code{length(a)xlength(b)} \code{matrix}.
+
+ Distances are nonnegative if they can be computed, \code{NA} if any of the two argument strings is \code{NA} and \code{Inf}
  when \code{maxDist} is exceeded or, in case of the hamming distance, when the two compared strings have different length.
 }
 \description{
-Compute distance metrics between strings
-}
-\section{Details}{
-
 \code{stringdist} computes pairwise string distances between elements of \code{character} vectors
 \code{a} and \code{b}, where the vector with less elements is recycled.
-
 \code{stringdistmatrix} computes the string distance matrix with rows according to
 \code{a} and columns according to \code{b}.
-
-Currently, the following distance metrics are supported:
-\tabular{ll}{
-   \code{osa} \tab Optimal string aligment, (restricted Damerau-Levenshtein distance).\cr
-   \code{lv} \tab Levenshtein distance (as in R's native \code{\link[utils]{adist}}).\cr
-   \code{dl} \tab Full Damerau-Levenshtein distance.\cr
-   \code{hamming}  \tab Hamming distance (\code{a} and \code{b} must have same nr of characters).\cr
-   \code{lcs} \tab Longest common substring distance.\cr
-   \code{qgram} \tab \eqn{q}-gram distance. \cr
-   \code{cosine} \tab cosine distance between \eqn{q}-gram profiles \cr
-   \code{jaccard} \tab Jaccard distance between \eqn{q}-gram profiles \cr
-   \code{jw} \tab Jaro, or Jaro-Winker distance.\cr
-   \code{soundex} \tab Distance based on soundex encoding (see below)
 }
-
-A short description of these algorithms is proveded \link[=stringdist-package]{here}, or
-see the \href{http://journal.r-project.org/archive/2014-1/loo.pdf}{R Journal Paper} (external link) for
-more formal descriptions.
-}
-
-\section{Encoding issues}{
-
-If \code{bytes=FALSE}, input strings are re-encoded to \code{utf8} an then to \code{integer}
-vectors prior to the distance calculation (since the underlying \code{C}-code expects \code{unsigned int}s).
-This double conversion is necessary as it seems the only way to
-reliably convert (possibly multibyte) characters to integers on all systems
-supported by \code{R}. \code{R}'s native \code{\link[utils]{adist}} function does this as well.
-
-If \code{bytes=TRUE}, the input strings are treated as if each byte was a
-single character. This may be significantly faster since it avoids
-conversion of \code{utf8} to integer with \code{\link[base]{utf8ToInt}} (up to a factor of 3, for strings of 5-25 characters).
-However, results may depend on the (possibly multibyte)  character encoding scheme
-and note that \code{R}'s internal encoding scheme is OS-dependent.
-If you're sure that all your input is \code{ASCII},  you can safely set
-\code{useBytes=TRUE} to profit from the speed gain on any platform.
-
-See base \code{R}'s \code{\link[base]{Encoding}} and
-\code{\link[base]{iconv}} documentation for details on how \code{R} handles
-character encoding.
-}
-
-\section{Unicode normalisation}{
-
-In \code{utf-8}, the same (accented) character may be represented as several byte sequences. For example, an u-umlaut
-can be represented with a single byte code or as a byte code representing \code{'u'} followed by a modifier byte code
-that adds the umlaut. The \href{http://cran.r-project.org/web/packages/stringi/}{stringi} package
-of Gagolevski and Tartanus offers unicode normalisation tools.
-}
-
-\section{Paralellization}{
-
-The \code{stringdistmatrix} function uses \code{\link[parallel]{makeCluster}} to create a local cluster and compute the
-distance matrix in parallel when \code{ncores>1}. The cluster is terminated after the matrix has been computed.
-As the cluster is local, the \code{ncores} parameter should not be larger than the number
-of cores on your machine. Use \code{\link[parallel]{detectCores}} to check the number of cores available. Alternatively,
-you can create a cluster using \code{\link[parallel]{makeCluster}} and pass that to \code{stringdistmatrix} (through the \code{cluster} argument.
-This allows you to reuse the cluster setup for other calculations.
-There is overhead in creating clusters, so creating the cluster yourself is a good choice if you want to call \code{stringdistmatrix}
-multiple times, for example in a loop.
-}
-
-\section{Acknowledgement}{
-
-The code for the full Damerau-Levenshtein distance was adapted from Nick Logan's
-\href{https://github.com/ugexe/Text--Levenshtein--Damerau--XS/blob/master/damerau-int.c}{public github repository}.
-}
-
-\section{Citation}{
-
-If you would like to cite this package, please cite the \href{http://journal.r-project.org/archive/2014-1/loo.pdf}{R Journal Paper}:
-\itemize{
-\item{M.P.J. van der Loo (2014). The \code{stringdist} package for approximate string matching.
- R Journal 6(1) pp 111-122}
-}
-Or use \code{citation('stringdist')} to get a bibtex item.
-}
-
-\section{other}{
+\section{Note on paralellization of \code{stringdistmatrix}}{
 
 
-\itemize{
+In older versions (<0.9) of \code{stringdist}, the \code{cluster} and \code{ncores} argument were the only
+paralellization options, and only for \code{stringdistmatrix}. These options are based on the \pkg{parallel} package
+which starts multiple R-sessions to run R code in parallel. If you're running R on a single machine it is both
+faster and easier to use the default multithreading, so do not specify \code{ncores} or \code{cluster} in such a case.
 
-\item{Raffael Vogler wrote a nice
-\href{http://www.joyofdata.de/blog/comparison-of-string-distance-algorithms/}{blog}
-comparing different string distances in this package.
-}
+As of the introduction of the \code{nthreads} argument, the \code{ncores} argument is mostly useless, although it still works.
+If \code{ncores>0}, a local cluster of R-sessions is set up automatically. Each R-session will use \code{nthread}
+threads.
 
-}
+The \code{cluster} argument is only interesting when the cluster is set up over different physical nodes. For example when
+setting up a network of nodes accross physically different machines. In each node, \code{nthread} threads will be used.
 }
 \examples{
 
@@ -189,7 +112,7 @@ stringdist("ab","abc",method="h")
 # in the strings from beginning to end
 stringdist("hello","HeLl0",method="h")
 
-# The lcm (longest common substring) distance returns the number of 
+# The lcs (longest common substring) distance returns the number of 
 # characters that are not part of the lcs.
 #
 # Here, the lcs is either 'a' or 'b' and one character cannot be paired:

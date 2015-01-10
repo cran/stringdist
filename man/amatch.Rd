@@ -8,35 +8,41 @@
 amatch(x, table, nomatch = NA_integer_, matchNA = TRUE, method = c("osa",
   "lv", "dl", "hamming", "lcs", "qgram", "cosine", "jaccard", "jw", "soundex"),
   useBytes = FALSE, weight = c(d = 1, i = 1, s = 1, t = 1), maxDist = 0.1,
-  q = 1, p = 0)
+  q = 1, p = 0, nthread = getOption("sd_num_thread"))
 
 ain(x, table, ...)
 }
 \arguments{
-\item{x}{vector: elements to be approximately matched: will be coerced to \code{character}.}
+\item{x}{elements to be approximately matched: will be coerced to \code{character}.}
 
-\item{table}{vector: lookup table for matching. Will be coerced to \code{character}.}
+\item{table}{lookup table for matching. Will be coerced to \code{character}.}
 
-\item{nomatch}{The value to be returned when no match is found. This is coerced to integer. \code{nomatch=0}
-can be a useful option.}
+\item{nomatch}{The value to be returned when no match is found. This is coerced to integer.}
 
 \item{matchNA}{Should \code{NA}'s be matched? Default behaviour mimics the
 behaviour of base \code{\link[base]{match}}, meaning that \code{NA} matches
 \code{NA} (see also the note on \code{NA} handling below).}
 
-\item{method}{Matching algorithm to use. See \code{\link{stringdist}}.}
+\item{method}{Matching algorithm to use. See \code{\link{stringdist-metrics}}.}
 
-\item{useBytes}{Perform byte-wise comparison. \code{useBytes=TRUE} is faster but may yield different
-results depending on character encoding. See also \code{\link{stringdist}}, under encoding issues.}
+\item{useBytes}{Perform byte-wise comparison. See \code{\link{stringdist-encoding}}.}
 
-\item{weight}{Weight parameters for matching algorithm See \code{\link{stringdist}}.}
+\item{weight}{For \code{method='osa'} or \code{'dl'}, the penalty for deletion, insertion, substitution and transposition, in that order.
+When \code{method='lv'}, the penalty for transposition is ignored. When \code{method='jw'}, the weights associated with characters
+of \code{a}, characters from \code{b} and the transposition weight, in that order.
+Weights must be positive and not exceed 1. \code{weight} is
+ignored completely when \code{method='hamming'}, \code{'qgram'}, \code{'cosine'}, \code{'Jaccard'}, \code{'lcs'}, or \code{soundex}.}
 
 \item{maxDist}{Elements in \code{x} will not be matched with elements of
- \code{table} if their distance is larger than \code{maxDist}.}
+\code{table} if their distance is larger than \code{maxDist}. Note that the maximum distance between strings depends on the method:
+it should always be specified.}
 
-\item{q}{q-gram size, see \code{\link{stringdist}}.}
+\item{q}{q-gram size, only when method is \code{'qgram'}, \code{'jaccard'}, or \code{'cosine'}.}
 
-\item{p}{Winklers penalty parameter for Jaro-Winkler distance, see \code{\link{stringdist}}.}
+\item{p}{Winklers penalty parameter for Jaro-Winkler distance, with \eqn{0\leq p\leq0.25}. Only when method is \code{'jw'}}
+
+\item{nthread}{Number of threads used by the underlying C-code. A sensible default is chosen,
+see \code{\link{stringdist-parallelization}}.}
 
 \item{...}{parameters to pass to \code{amatch} (except \code{nomatch})}
 }
@@ -78,6 +84,9 @@ amatch("leia",c("uhura","leela"),maxDist=5)
 
 # we can restrict the search
 amatch("leia",c("uhura","leela"),maxDist=1)
+
+# we can match each value in the find vector against values in the lookup table:
+amatch(c("leia","uhura"),c("ripley","leela","scully","trinity"),maxDist=2)
 
 # setting nomatch returns a different value when no match is found
 amatch("leia",c("uhura","leela"),maxDist=1,nomatch=0)
