@@ -3,7 +3,31 @@
 #' @section Introduction:
 #'
 #' The \pkg{stringdist} package offers fast and platform-independent string metrics. 
-#' It's main purpose is to compute various string distances and to do approximate text matching between character vectors.
+#' Its main purpose is to compute various string distances and to do
+#' approximate text matching between character vectors. A typical use is to 
+#' match strings that are not precisely the same. For example
+#'
+#' \code{  amatch(c("hello","g'day"),c("hi","hallo","ola"),maxDist=2)}
+#'
+#' returns \code{c(2,NA)} since \code{"hello"} matches closest with \code{"hallo"}, and within
+#' the maximum (optimal string alignment) distance. The second element, \code{"g'day"},
+#' matches closest with \code{"ola"} but since the distance equals 4, no match is reported.
+#'
+#' A second typical use is to compute string distances. For example 
+#'
+#' \code{  stringdist(c("g'day"),c("hi","hallo","ola"))}
+#'
+#' Returns \code{c(5,5,4)} since these are the distances between \code{"g'day"} and
+#' respectively \code{"hi"}, \code{"hallo"}, and \code{"ola"}.
+#'
+#' A third typical use would be to compute a \code{dist} object, that can be 
+#' used to cluster text strings.
+#' 
+#' \code{stringdistmatrix(c("foo","bar","boo","baz"))}
+#'
+#' Returns an object of class \code{dist} that can be used by clustering algorithms in 
+#' the \code{cluster} package (such as \code{hclust}).
+#'
 #' Besides documentation for each function, the main topics documented are:
 #' 
 #' \itemize{
@@ -46,26 +70,10 @@
 #' \code{stringdistmatrix} computes the string distance matrix with rows according to
 #' \code{a} and columns according to \code{b}.
 #' 
-#' 
-#' 
-#' @section Note on paralellization of \code{stringdistmatrix}:
-#'
-#' In older versions (<0.9) of \code{stringdist}, the \code{cluster} and \code{ncores} argument were the only 
-#' paralellization options, and only for \code{stringdistmatrix}. These options are based on the \pkg{parallel} package 
-#' which starts multiple R-sessions to run R code in parallel. If you're running R on a single machine it is both 
-#' faster and easier to use the default multithreading, so do not specify \code{ncores} or \code{cluster} in such a case.
-#'
-#' As of the introduction of the \code{nthreads} argument, the \code{ncores} argument is mostly useless, although it still works.
-#' If \code{ncores>0}, a local cluster of R-sessions is set up automatically. Each R-session will use \code{nthread}
-#' threads.
-#'
-#' The \code{cluster} argument is only interesting when the cluster is set up over different physical nodes. For example when
-#' setting up a network of nodes accross physically different machines. In each node, \code{nthread} threads will be used.
-#'
-#'
 #'
 #' @param a R object (target); will be converted by \code{as.character}.
-#' @param b R object (source); will be converted by \code{as.character}.
+#' @param b R object (source); will be converted by \code{as.character}. This argument is optional for 
+#'      \code{stringdistmatrix} (see section \code{Value}).
 #' @param method Method for distance calculation. The default is \code{"osa"}, see \code{\link{stringdist-metrics}}.
 #' @param useBytes Perform byte-wise comparison, see \code{\link{stringdist-encoding}}.
 #' @param weight For \code{method='osa'} or \code{'dl'}, the penalty for deletion, insertion, substitution and transposition, in that order.
@@ -73,18 +81,20 @@
 #'   of \code{a}, characters from \code{b} and the transposition weight, in that order.
 #'   Weights must be positive and not exceed 1. \code{weight} is
 #'   ignored completely when \code{method='hamming'}, \code{'qgram'}, \code{'cosine'}, \code{'Jaccard'}, \code{'lcs'}, or \code{soundex}. 
-#' @param maxDist  [DEPRECATED AND WILL BE REMOVED] Currently kept for backward compatibility. It does not
+#' @param maxDist  [DEPRECATED AND WILL BE REMOVED|2016] Currently kept for backward compatibility. It does not
 #' offer any speed gain. (In fact, it currently slows things down when set to anything different from \code{Inf}).
 #' @param q  Size of the \eqn{q}-gram; must be nonnegative. Only applies to \code{method='qgram'}, \code{'jaccard'} or \code{'cosine'}.
 #' @param p Penalty factor for Jaro-Winkler distance. The valid range for \code{p} is \code{0 <= p <= 0.25}. 
 #'  If \code{p=0} (default), the Jaro-distance is returned. Applies only to \code{method='jw'}.
 #' @param nthread Maximum number of threads to use. By default, a sensible number of threads is chosen, see \code{\link{stringdist-parallelization}}. 
 #'  
-#'
+#' @seealso \code{\link{stringsim}}, \code{\link{qgrams}}
 #'
 #' @return For \code{stringdist},  a vector with string distances of size \code{max(length(a),length(b))}.
 #'  
-#'  For \code{stringdistmatrix}, a \code{length(a)xlength(b)} \code{matrix}. 
+#'  For \code{stringdistmatrix}: if both \code{a} and \code{b} are passed, 
+#'  a \code{length(a)xlength(b)} \code{matrix}. If only a single \code{character} vector \code{a} is given
+#'  an object of class \code{\link[stats]{dist}} is returned.
 #'  
 #'  Distances are nonnegative if they can be computed, \code{NA} if any of the two argument strings is \code{NA} and \code{Inf}
 #'  when \code{maxDist} is exceeded or, in case of the hamming distance, when the two compared strings have different length.
@@ -100,7 +110,7 @@ stringdist <- function(a, b
   , nthread = getOption("sd_num_thread")
 ){
   if (maxDist < Inf)
-    message("Argument 'maxDist' is deprecated for function 'stringdist'")
+    warning("Argument 'maxDist' is deprecated for function 'stringdist'. This argument will be removed in the future.")   
   # note: enc2utf8 is very efficient when the native encoding is already UTF-8.
   a <- as.character(a)
   b <- as.character(b)
@@ -135,8 +145,8 @@ stringdist <- function(a, b
 
 
 #' @param useNames Use input vectors as row and column names?
-#' @param ncores [DEPRECATED AND WILL BE REMOVED]. Optionally use \code{nthreads} in stead. See below under parallelization of \code{stringdistmatrix}.
-#' @param cluster (Optional) a custom cluster, created with \code{\link[parallel]{makeCluster}}. 
+#' @param ncores [DEPRECATED AND WILL BE REMOVED|2016]. Use \code{nthreads} in stead. This argument is ignored.
+#' @param cluster [DEPRECATED AND WILL BE REMOVED|2016].  A custom cluster, created with \code{\link[parallel]{makeCluster}}. 
 #'
 #'
 #' @rdname stringdist
@@ -145,19 +155,68 @@ stringdistmatrix <- function(a, b
   , method=c("osa","lv","dl","hamming","lcs","qgram","cosine","jaccard","jw","soundex")
   , useBytes = FALSE
   , weight=c(d=1,i=1,s=1,t=1),  maxDist=Inf, q=1, p=0
-  , useNames=FALSE, ncores=1, cluster=NULL
+  , useNames=c('none','strings','names'), ncores=1, cluster=NULL
   , nthread = getOption("sd_num_thread")
 ){
   if (maxDist < Inf)
-    message("Argument 'maxDist' is deprecated for function 'stringdistmatrix'. This argument will be removed in the future.") 
+    warning("Argument 'maxDist' is deprecated for function 'stringdistmatrix'. This argument will be removed in the future.") 
   if (ncores > 1 ){
-    message("Argument 'ncores' is deprecated as stringdist now uses multithreading by default. This argument is currently ignored and will be removed in the future.")
+    warning("Argument 'ncores' is deprecated as stringdist now uses multithreading by default. This argument is currently ignored and will be removed in the future.")
     ncores <- 1
   }
- 
+  if ( !is.null(cluster) ){
+    message("Argument 'cluster' is deprecaterd as stringdust now uses multithreading by default. The argument is currently ignored and will be removed in the future")
+  }
+
+  # for backward compatability with stringdist <= 0.9.0
+  if (identical(useNames, FALSE)) useNames <- "none"
+  if (identical(useNames, TRUE)) useNames <- "strings"
+  useNames <- match.arg(useNames)
+  
+  method <- match.arg(method)
+  nthread <- as.integer(nthread)
+  stopifnot(
+    all(is.finite(weight))
+    , all(weight > 0)
+    , all(weight <=1)
+    , q >= 0
+    , p <= 0.25
+    , p >= 0
+    , is.logical(useBytes)
+    , ifelse(method %in% c('osa','dl'), length(weight) >= 4, TRUE)
+    , ifelse(method %in% c('lv','jw') , length(weight) >= 3, TRUE)
+    , ncores > 0
+    , nthread > 0
+  )
+  if (method == 'jw') weight <- weight[c(2,1,3)]
+  
+  
+  # if b is missing, generate a 'dist' object.  
+  if (missing(b)){ 
+    return( lower_tri(a
+        , method=method
+        , useBytes=useBytes
+        , weight=weight
+        , useNames=useNames
+        , nthread=nthread)
+    )
+  }
+
+    if (useNames == "names"){
+    rowns <- names(a)
+    colns <- names(b)
+  }
+  
+  # NOTE: this strips off names
   a <- as.character(a)
   b <- as.character(b)
 
+  if (useNames=="strings"){
+    rowns <- a
+    colns <- b
+  } 
+  
+  
   if (!useBytes){
     a <- enc2utf8(a)
     b <- enc2utf8(b)
@@ -167,41 +226,16 @@ stringdistmatrix <- function(a, b
    return(matrix(numeric(0)))
   }
 
-  if (useNames){
-   rowns <- a
-   colns <- b
-  }
 
-  method <- match.arg(method)
-  nthread <- as.integer(nthread)
-  stopifnot(
-      all(is.finite(weight))
-      , all(weight > 0)
-      , all(weight <=1)
-      , q >= 0
-      , p <= 0.25
-      , p >= 0
-      , is.logical(useBytes)
-      , ifelse(method %in% c('osa','dl'), length(weight) >= 4, TRUE)
-      , ifelse(method %in% c('lv','jw') , length(weight) >= 3, TRUE)
-      , ncores > 0
-      , nthread > 0
-  )
-  if (method == 'jw') weight <- weight[c(2,1,3)]
-  if (ncores==1){
-    x <- sapply(b,do_dist, USE.NAMES=FALSE, a,method,weight,maxDist, q, p,useBytes, nthread)
+
+  x <- vapply(b, do_dist, USE.NAMES=FALSE, FUN.VALUE=numeric(length(a))
+          , a, method,weight,maxDist, q, p,useBytes, nthread)
+
+  if (useNames %in% c("strings","names") ){  
+    structure(matrix(x,nrow=length(a),ncol=length(b), dimnames=list(rowns,colns)))
   } else {
-    if ( is.null(cluster) ){
-      cluster <- makeCluster(ncores)
-      turn_cluster_off <- TRUE
-    } else {
-      stopifnot(inherits(cluster, 'cluster'))
-      turn_cluster_off <- FALSE
-    }
-    x <- parSapply(cluster, b,do_dist,a,method,weight,maxDist, q, p, useBytes, nthread)
-    if (turn_cluster_off) stopCluster(cluster)
+    matrix(x,nrow=length(a),ncol=length(b)) 
   }
-  if (!useNames)  as.matrix(x) else structure(as.matrix(x), dimnames=list(rowns,colns))
 }
 
 
@@ -214,26 +248,65 @@ char2int <- function(x){
   lapply(enc2utf8(x),utf8ToInt)
 }
 
+#  enum-type in stringdist.h
+METHODS <-c(
+    osa     = 0L
+  , lv      = 1L
+  , dl      = 2L
+  , hamming = 3L
+  , lcs     = 4L
+  , qgram   = 5L
+  , cosine  = 6L
+  , jaccard = 7L
+  , jw      = 8L
+  , soundex = 9L
+)
 
 
 do_dist <- function(a, b, method, weight, maxDist, q, p, useBytes=FALSE, nthread=1L){
-  d <- switch(method,
-    osa     = .Call('R_osa'   , a, b, as.double(weight), useBytes, nthread),
-    lv      = .Call('R_lv'    , a, b, as.double(weight), useBytes, nthread),
-    dl      = .Call('R_dl'    , a, b, as.double(weight), useBytes, nthread),
-    hamming = .Call('R_hm'    , a, b, useBytes, nthread),
-    lcs     = .Call('R_lcs'   , a, b, useBytes, nthread),
-    qgram   = .Call('R_qgram_tree' , a, b, as.integer(q), 0L, useBytes, nthread),
-    cosine  = .Call('R_qgram_tree' , a, b, as.integer(q), 1L, useBytes, nthread),
-    jaccard = .Call('R_qgram_tree' , a, b, as.integer(q), 2L, useBytes, nthread),
-    jw      = .Call('R_jw'    , a, b, as.double(p), as.double(weight), useBytes, nthread),
-    soundex = .Call('R_soundex_dist', a, b, useBytes, nthread)
+  if (method=='soundex' && !all(printable_ascii(a) & printable_ascii(b)) ){
+    warning("Non-printable ascii or non-ascii characters in soundex. Results may be unreliable. See ?printable_ascii.")
+  }
+  method <- METHODS[method]
+  if ( is.na(method) ){
+    stop(sprintf("method '%s' is not defined",method))
+  }
+
+  d <- .Call("R_stringdist", a, b, method
+    , as.double(weight), as.double(p), as.integer(q)
+    , as.integer(useBytes), as.integer(nthread)
   )
+
   if (maxDist < Inf ){
     d[!is.na(d) & d > maxDist] <- Inf
   }
   d
 }
 
-
+# more efficient function that returns a square distance matrix as a 'stats::dist' object.
+lower_tri <- function(a
+   , method=c("osa","lv","dl","hamming","lcs","qgram","cosine","jaccard","jw","soundex")
+   , useBytes = FALSE
+   , weight=c(d=1,i=1,s=1,t=1), q=1, p=0
+   , useNames=FALSE
+   , nthread = getOption("sd_num_thread")
+){
+  methnr <- METHODS[method]
+  if (is.na(method)){
+    stop(sprintf("method '%s' is not defined",method))
+  }
+  x <- .Call("R_lower_tri", as.character(a), methnr
+             , as.double(weight), as.double(p), as.integer(q)
+             , as.integer(useBytes), as.integer(nthread))
+  
+  attributes(x) <- list(class='dist'
+    , Size     = length(a)
+    , Diag   = FALSE
+    , Upper  = FALSE
+    , method = method)
+  if (useNames == "strings") attr(x,"Labels") <- as.character(a)
+  if (useNames == "names" ) attr(x,"Labels") <- names(a)
+  
+  x
+}
 

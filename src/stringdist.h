@@ -1,3 +1,4 @@
+
 /*  stringdist - a C library of string distance algorithms with an interface to R.
  *  Copyright (C) 2013  Mark van der Loo
  *
@@ -15,26 +16,44 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>. 
  *
  *  You can contact the author at: mark _dot_ vanderloo _at_ gmail _dot_ com
- *
- *
- * This code is gratefully based on Nick Logan's github repository
- * https://github.com/ugexe/Text--Levenshtein--Damerau--XS/blob/master/damerau-int.c
- *
- */ 
+ */
+
+
+#ifndef SD_STRINGDIST_H
+#define SD_STRINGDIST_H
+
+#include "dictionary.h"
+#include "qtree.h"
+#include "dist.h"
+
+typedef enum Distance { osa, lv, dl, hamming, lcs, qgram, cosine, jaccard, jw, soundex} Distance;
+typedef struct {
+  Distance distance;
+  // workspace
+  double *work;
+  // [optional] weight vector
+  double *weight;
+  // dictionary object for dl-distance
+  dictionary *dict;
+  // tree object to store q-grams
+  qtree *tree;
+  // the q in qgrams
+  unsigned int q;
+  // Winkler's penalty factor
+  double p;
+  // fail indicator
+  unsigned int ifail;
+} Stringdist;
+
+Stringdist *open_stringdist(Distance, int, int, ...);
+
+double stringdist(Stringdist *, unsigned int *, int, unsigned int *, int);
+
+void close_stringdist(Stringdist *S);
 
 
 
-#include "utils.h"
-#ifdef _OPENMP
-#include <omp.h>
 #endif
 
-double hamming_dist(unsigned int *a, int len_a, unsigned int *b, int len_b){
-  double h=0;
-    if (len_a != len_b) return 1.0/0.0;
-    for(int i=0; i < len_a; ++i){
-     if (a[i] != b[i]) h++;
-    }
-  return h;
-}
+
 
