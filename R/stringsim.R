@@ -8,6 +8,7 @@
 #' @param b R object (source); will be converted by \code{as.character}.
 #' @param method Method for distance calculation. The default is \code{"osa"}, 
 #'   see \code{\link{stringdist-metrics}}.
+#' @param useBytes Perform byte-wise comparison, see \code{\link{stringdist-encoding}}.
 #' @param q  Size of the \eqn{q}-gram; must be nonnegative. Only applies to
 #'   \code{method='qgram'}, \code{'jaccard'} or \code{'cosine'}.
 #' @param ... additional arguments are passed on to \code{\link{stringdist}}.
@@ -28,33 +29,36 @@
 #' @example ../examples/stringsim.R
 #' @export
 stringsim <- function(a, b, method = c("osa", "lv", "dl", "hamming", "lcs",
-  "qgram", "cosine", "jaccard", "jw", "soundex"), q = 1, ...) {
+  "qgram", "cosine", "jaccard", "jw", "soundex"), useBytes=FALSE, q = 1, ...) {
   # Calculate the distance 
   method <- match.arg(method)
-  dist <- stringdist::stringdist(a, b, method=method, q=q, ...)
+  dist <- stringdist::stringdist(a, b, method=method, useBytes=useBytes, q=q, ...)
+
+  nctype <- if (useBytes) "bytes" else "char"
+
   # Normalise the distance by dividing it by the maximum possible distance
   if (method == "hamming") {
-    max_dist <- if (length(b) > length(a)) nchar(b) else nchar(a)
+    max_dist <- if (length(b) > length(a)) nchar(b,type=nctype) else nchar(a,type=nctype)
     max_dist[max_dist == 0] <- 1
     sim <- 1 - dist/max_dist
   } else if (method == "lcs") {
-    max_dist <- nchar(a) + nchar(b)
+    max_dist <- nchar(a,type=nctype) + nchar(b,type=nctype)
     max_dist[max_dist == 0] <- 1
     sim <- 1 - dist/max_dist
   } else if (method == "lv") {
-    max_dist <- pmax(nchar(a), nchar(b))
+    max_dist <- pmax(nchar(a,type=nctype), nchar(b,type=nctype))
     max_dist[max_dist == 0] <- 1
     sim <- 1 - dist/max_dist
   } else if (method == "osa") {
-    max_dist <- pmax(nchar(a), nchar(b))
+    max_dist <- pmax(nchar(a,type=nctype), nchar(b,type=nctype))
     max_dist[max_dist == 0] <- 1
     sim <- 1 - dist/max_dist
   } else if (method == "dl") {
-    max_dist <- pmax(nchar(a), nchar(b))
+    max_dist <- pmax(nchar(a,type=nctype), nchar(b,type=nctype))
     max_dist[max_dist == 0] <- 1
     sim <- 1 - dist/max_dist
   } else if (method == "qgram") {
-    max_dist <- (nchar(a) + nchar(b) - 2*q + 2)
+    max_dist <- (nchar(a,type=nctype) + nchar(b,type=nctype) - 2*q + 2)
     max_dist[max_dist < 0] <- 1
     sim <- 1 - dist/max_dist
   } else if (method == "cosine") {

@@ -5,7 +5,7 @@
 \title{Compute similarity scores between strings}
 \usage{
 stringsim(a, b, method = c("osa", "lv", "dl", "hamming", "lcs", "qgram",
-  "cosine", "jaccard", "jw", "soundex"), q = 1, ...)
+  "cosine", "jaccard", "jw", "soundex"), useBytes = FALSE, q = 1, ...)
 }
 \arguments{
 \item{a}{R object (target); will be converted by \code{as.character}.}
@@ -14,6 +14,8 @@ stringsim(a, b, method = c("osa", "lv", "dl", "hamming", "lcs", "qgram",
 
 \item{method}{Method for distance calculation. The default is \code{"osa"},
 see \code{\link{stringdist-metrics}}.}
+
+\item{useBytes}{Perform byte-wise comparison, see \code{\link{stringdist-encoding}}.}
 
 \item{q}{Size of the \eqn{q}-gram; must be nonnegative. Only applies to
 \code{method='qgram'}, \code{'jaccard'} or \code{'cosine'}.}
