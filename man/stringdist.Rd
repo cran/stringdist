@@ -17,51 +17,67 @@ stringdistmatrix(a, b, method = c("osa", "lv", "dl", "hamming", "lcs",
   nthread = getOption("sd_num_thread"))
 }
 \arguments{
-\item{a}{R object (target); will be converted by \code{as.character}.}
+\item{a}{R object (target); will be converted by \code{as.character}}
 
-\item{b}{R object (source); will be converted by \code{as.character}. This argument is optional for
-\code{stringdistmatrix} (see section \code{Value}).}
+\item{b}{R object (source); will be converted by \code{as.character}
+This argument is optional for \code{stringdistmatrix} (see section \code{Value}).}
 
-\item{method}{Method for distance calculation. The default is \code{"osa"}, see \code{\link{stringdist-metrics}}.}
+\item{method}{Method for distance calculation. The default is \code{"osa"},
+see \code{\link{stringdist-metrics}}.}
 
-\item{useBytes}{Perform byte-wise comparison, see \code{\link{stringdist-encoding}}.}
+\item{useBytes}{Perform byte-wise comparison, see
+\code{\link{stringdist-encoding}}.}
 
-\item{weight}{For \code{method='osa'} or \code{'dl'}, the penalty for deletion, insertion, substitution and transposition, in that order.
-When \code{method='lv'}, the penalty for transposition is ignored. When \code{method='jw'}, the weights associated with characters
-of \code{a}, characters from \code{b} and the transposition weight, in that order.
-Weights must be positive and not exceed 1. \code{weight} is
-ignored completely when \code{method='hamming'}, \code{'qgram'}, \code{'cosine'}, \code{'Jaccard'}, \code{'lcs'}, or \code{soundex}.}
+\item{weight}{For \code{method='osa'} or \code{'dl'}, the penalty for
+deletion, insertion, substitution and transposition, in that order. When
+\code{method='lv'}, the penalty for transposition is ignored. When
+\code{method='jw'}, the weights associated with characters of \code{a},
+characters from \code{b} and the transposition weight, in that order.
+Weights must be positive and not exceed 1. \code{weight} is ignored
+completely when \code{method='hamming'}, \code{'qgram'}, \code{'cosine'},
+\code{'Jaccard'}, \code{'lcs'}, or \code{soundex}.}
 
-\item{maxDist}{[DEPRECATED AND WILL BE REMOVED|2016] Currently kept for backward compatibility. It does not
-offer any speed gain. (In fact, it currently slows things down when set to anything different from \code{Inf}).}
+\item{maxDist}{[DEPRECATED AND WILL BE REMOVED|2016] Currently kept for
+backward compatibility. It does not offer any speed gain. (In fact, it
+currently slows things down when set to anything different from
+\code{Inf}).}
 
-\item{q}{Size of the \eqn{q}-gram; must be nonnegative. Only applies to \code{method='qgram'}, \code{'jaccard'} or \code{'cosine'}.}
+\item{q}{Size of the \eqn{q}-gram; must be nonnegative. Only applies to
+\code{method='qgram'}, \code{'jaccard'} or \code{'cosine'}.}
 
-\item{p}{Penalty factor for Jaro-Winkler distance. The valid range for \code{p} is \code{0 <= p <= 0.25}.
-If \code{p=0} (default), the Jaro-distance is returned. Applies only to \code{method='jw'}.}
+\item{p}{Penalty factor for Jaro-Winkler distance. The valid range for
+\code{p} is \code{0 <= p <= 0.25}. If \code{p=0} (default), the
+Jaro-distance is returned. Applies only to \code{method='jw'}.}
 
-\item{nthread}{Maximum number of threads to use. By default, a sensible number of threads is chosen, see \code{\link{stringdist-parallelization}}.}
+\item{nthread}{Maximum number of threads to use. By default, a sensible
+  number of threads is chosen, see \code{\link{stringdist-parallelization}}.}
 
 \item{useNames}{Use input vectors as row and column names?}
 
-\item{ncores}{[DEPRECATED AND WILL BE REMOVED|2016]. Use \code{nthreads} in stead. This argument is ignored.}
+\item{ncores}{[DEPRECATED AND WILL BE REMOVED|2016]. Use \code{nthread} in
+stead. This argument is ignored.}
 
-\item{cluster}{[DEPRECATED AND WILL BE REMOVED|2016].  A custom cluster, created with \code{\link[parallel]{makeCluster}}.}
+\item{cluster}{[DEPRECATED AND WILL BE REMOVED|2016].  A custom cluster,
+  created with \code{\link[parallel]{makeCluster}}.}
 }
 \value{
-For \code{stringdist},  a vector with string distances of size \code{max(length(a),length(b))}.
+For \code{stringdist},  a vector with string distances of size
+  \code{max(length(a),length(b))}.
 
- For \code{stringdistmatrix}: if both \code{a} and \code{b} are passed,
- a \code{length(a)xlength(b)} \code{matrix}. If only a single \code{character} vector \code{a} is given
- an object of class \code{\link[stats]{dist}} is returned.
+For \code{stringdistmatrix}: if both \code{a} and \code{b} are passed, a
+\code{length(a)xlength(b)} \code{matrix}. If a single argument \code{a} is
+given an object of class \code{\link[stats]{dist}} is returned.
 
- Distances are nonnegative if they can be computed, \code{NA} if any of the two argument strings is \code{NA} and \code{Inf}
- when \code{maxDist} is exceeded or, in case of the hamming distance, when the two compared strings have different length.
+Distances are nonnegative if they can be computed, \code{NA} if any of the
+two argument strings is \code{NA} and \code{Inf} when \code{maxDist} is
+exceeded or, in case of the hamming distance, when the two compared strings
+have different length.
 }
 \description{
-\code{stringdist} computes pairwise string distances between elements of \code{character} vectors
-\code{a} and \code{b}, where the vector with less elements is recycled.
-\code{stringdistmatrix} computes the string distance matrix with rows according to
+\code{stringdist} computes pairwise string distances between elements of
+\code{a} and \code{b}, where the argument with less elements is recycled.
+\code{stringdistmatrix} computes the string distance matrix with rows
+according to
 \code{a} and columns according to \code{b}.
 }
 \examples{
@@ -76,8 +92,7 @@ d <- stringdistmatrix(c('foo','bar','boo','baz'))
 # The following gives a matrix
 stringdistmatrix(c("foo","bar","boo"),c("baz","buz"))
 
-
-# The same example using Damerau-Levenshtein distance (multiple editing of substrings allowed)
+# An example using Damerau-Levenshtein distance (multiple editing of substrings allowed)
 stringdist("ca","abc",method="dl")
 
 # string distance matching is case sensitive:
@@ -148,6 +163,6 @@ stringdist('Euler','Ellery',method='soundex')
 
 }
 \seealso{
-\code{\link{stringsim}}, \code{\link{qgrams}}
+\code{\link{stringsim}}, \code{\link{qgrams}}, \code{\link{amatch}}
 }
 

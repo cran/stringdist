@@ -10,6 +10,10 @@ test_that("Argument parsing",{
    expect_error(stringdist("a","b",weight=c(1,0,1,1)))
    expect_error(stringdist("a","b",weight=c(1,1,1,4)))
    expect_warning(stringdist(letters[1:3],letters[1:2]))
+   expect_warning(stringdist(list('a'),'a'))
+   expect_warning(stringdist('a',list('a')))
+   expect_warning(stringdistmatrix(list('a')))
+   expect_warning(stringdistmatrix(list('a'),list('b')))
 }) 
 
 
@@ -55,6 +59,37 @@ test_that("weights are handled correctly",{
       stringdist("abc","ac",method='osa',weight=c(0.5,1,1,1)),
       stringdist("ac","abc",method='osa',weight=c(1,0.5,1,1))
    )
+   
+  expect_equal( # two deletions from source (b) to target (a)
+    stringdist("","aa",weight=c(0.5,1,1,1),method="osa"),1
+  )
+  expect_equal( # two deletions from source (b) to target (a)
+    stringdist("","aa",weight=c(0.5,1,1,1),method="lv"),1
+  )
+  expect_equal( # two deletions from source (b) to target (a)
+    stringdist("","aa",weight=c(0.5,1,1,1),method="dl"),1
+  )
+  
+  # Thanks to Zach Price for reporting this bug.
+  expect_equal(
+    stringdist("ABC", "BC", method = "lv", weight = c(i=.1, d=.1, s=.1)),.1
+  )
+  expect_equal(
+    stringdist("ABC", "BC", method = "lv", weight = c(i=.1, d=.1, s=1)),.1
+  )
+  
+  expect_equal(
+    stringdist("ABC", "BC", method = "osa", weight = c(i=.1, d=.1, s=.1,t=.1)),.1
+  )
+  expect_equal(
+    stringdist("ABC", "BC", method = "osa", weight = c(i=.1, d=.1, s=1,t=.1)),.1
+  )
+  expect_equal(
+    stringdist("ABC", "BC", method = "dl", weight = c(i=.1, d=.1, s=.1,t=.1)),.1
+  )
+  expect_equal(
+    stringdist("ABC", "BC", method = "dl", weight = c(i=.1, d=.1, s=1,t=.1)),.1
+  )
 })
 
 test_that("NA's are handled correctly",{

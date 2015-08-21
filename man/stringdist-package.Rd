@@ -10,31 +10,44 @@ A package for string distance calculation and approximate string matching.
 \section{Introduction}{
 
 
-The \pkg{stringdist} package offers fast and platform-independent string metrics.
-Its main purpose is to compute various string distances and to do
-approximate text matching between character vectors. A typical use is to
-match strings that are not precisely the same. For example
+The \pkg{stringdist} package offers fast and platform-independent string
+metrics. Its main purpose is to compute various string distances and to do
+approximate text matching between character vectors. As of version 0.9.3,
+it is also possible to compute distances between sequences represented by
+integer vectors.
+
+
+A typical use is to match strings that are not precisely the same. For
+example
 
 \code{  amatch(c("hello","g'day"),c("hi","hallo","ola"),maxDist=2)}
 
-returns \code{c(2,NA)} since \code{"hello"} matches closest with \code{"hallo"}, and within
-the maximum (optimal string alignment) distance. The second element, \code{"g'day"},
-matches closest with \code{"ola"} but since the distance equals 4, no match is reported.
+returns \code{c(2,NA)} since \code{"hello"} matches closest with
+\code{"hallo"}, and within the maximum (optimal string alignment) distance.
+The second element, \code{"g'day"}, matches closest with \code{"ola"} but
+since the distance equals 4, no match is reported.
 
 A second typical use is to compute string distances. For example
 
 \code{  stringdist(c("g'day"),c("hi","hallo","ola"))}
 
-Returns \code{c(5,5,4)} since these are the distances between \code{"g'day"} and
-respectively \code{"hi"}, \code{"hallo"}, and \code{"ola"}.
+Returns \code{c(5,5,4)} since these are the distances between \code{"g'day"}
+and respectively \code{"hi"}, \code{"hallo"}, and \code{"ola"}.
 
-A third typical use would be to compute a \code{dist} object, that can be
-used to cluster text strings.
+A third typical use would be to compute a \code{dist} object. The command
 
 \code{stringdistmatrix(c("foo","bar","boo","baz"))}
 
-Returns an object of class \code{dist} that can be used by clustering algorithms in
-the \code{cluster} package (such as \code{hclust}).
+returns an object of class \code{dist} that can be used by clustering
+algorithms such as \code{stats::hclust}.
+
+A fourth use is to compute string distances between general sequences,
+represented as integer vectors (which must be stored in a \code{list}):
+
+\code{seq_dist( list(c(1L,1L,2L)), list(c(1L,2L,1L),c(2L,3L,1L,2L)) )}
+
+The above code yields the vector \code{c(1,2)} (the first shorter first
+argument is recycled over the longer second argument)
 
 Besides documentation for each function, the main topics documented are:
 
@@ -51,7 +64,7 @@ Besides documentation for each function, the main topics documented are:
   \item{The code for the full Damerau-Levenshtein distance was adapted from Nick Logan's
   \href{https://github.com/ugexe/Text--Levenshtein--Damerau--XS/blob/master/damerau-int.c}{public github repository}.}
   \item{C code for converting UTF-8 to integer was copied from the R core for performance reasons.}
-  \item{The code for soundex conversion was kindly contributed by Jan van der Laan.}
+  \item{The code for soundex conversion and string similarity was kindly contributed by Jan van der Laan.}
 }
 }
 

@@ -23,6 +23,21 @@ mymsg <- message
   options(sd_num_thread=nthread)
 }
 
+# When necessary and possible, argument is coverted to integers.
+ensure_int_list <- function(x){
+  if (is.integer(x)|is.numeric(x)) return(list(as.integer(x)))
+  if (!is.list(x)) stop("argument must be 'list', 'integer' or 'numeric'")
+  if (!all_int(x)){
+    lapply(x,as.integer)
+  } else {
+    x
+  }
+}
+
+setNames <- function(object, nm){
+  names(object) <- nm
+  object
+}
 
 #' Detect the presence of non-printable or non-ascii characters
 #' 
@@ -58,6 +73,16 @@ printable_ascii <- function(x){
   )  
   !grepl(charclass,x)
 }
+
+# check whether all elements of a list are of type 'integer'.
+# x MUST be a list.
+all_int <- function(x){
+  .Call("R_all_int",x)
+}
+
+
+
+
 
 
 

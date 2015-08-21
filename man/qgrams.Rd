@@ -10,7 +10,7 @@ qgrams(..., .list = NULL, q = 1L, useBytes = FALSE,
 \arguments{
 \item{...}{any number of (named) arguments, that will be coerced to character with \code{as.character}.}
 
-\item{.list}{Will be concatenated with the \code{...} argument(s). Usefull for adding character vectors named \code{'q'} or \code{'useNames'}.}
+\item{.list}{Will be concatenated with the \code{...} argument(s). Useful for adding character vectors named \code{'q'} or \code{'useNames'}.}
 
 \item{q}{size of q-gram, must be non-negative.}
 

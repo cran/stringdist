@@ -150,21 +150,32 @@ static int utf8_to_int(const char *str, unsigned int *outbuf){
 }
 
 
-/* todo: catch *len=-1 */
-unsigned int *get_elem1(SEXP x, int i, int bytes, int *len, int *isna, unsigned int *c){
+// Get one element from x (VECSXP or STRSXP) convert to usigned int if necessary and store in c
+// TODO: this can probably be a bit optimized by decreasing the use of the *_ELT macros.
+unsigned int *get_elem(SEXP x, int i, int bytes, int intdist, int *len, int *isna, unsigned int *c){
 
-  *isna = ( STRING_ELT(x,i) == NA_STRING );
-  if (bytes){
-    (*len)  = length(STRING_ELT(x,i));
-    for (int j=0; j < *len; j++ ){
-      c[j] =  CHAR(STRING_ELT(x,i))[j];
-    }
-      c[*len] = 0;
+  if ( intdist ){
+    // we need a copy with trailing zero in this case since some distances 
+    // (e.g the dl-distance) expects this
+    *isna = ( INTEGER(VECTOR_ELT(x,i))[0] == NA_INTEGER );
+    (*len) = length(VECTOR_ELT(x,i));
+    // this implicitly converts from int to unsigned int (but that should not influence the result).
+    memcpy(c , INTEGER(VECTOR_ELT(x,i)), (*len) * sizeof(int));
+    c[*len] = 0;
   } else {
-    (*len)  = utf8_to_int( CHAR(STRING_ELT(x,i)), c);
-  }
-  if ( *len < 0 ){
-    error("Encountered byte sequence not representing an utf-8 character.\n");
+    *isna = ( STRING_ELT(x,i) == NA_STRING );
+    if (bytes){
+      (*len)  = length(STRING_ELT(x,i));
+      for (int j=0; j < *len; j++ ){
+        c[j] = CHAR(STRING_ELT(x,i))[j];
+      }
+        c[*len] = 0;
+    } else {
+      (*len)  = utf8_to_int( CHAR(STRING_ELT(x,i)), c);
+      if ( *len < 0 ){
+        error("Encountered byte sequence not representing an utf-8 character.\n");
+      }
+    }
   }
   return  c;
 }
@@ -189,7 +200,7 @@ static int char_to_int(const char *str, unsigned int *outbuf){
   return str_len;
 }
 
-Stringset *new_stringset(SEXP str, int bytes){
+Stringset *new_stringset(SEXP str, int bytes, int intdist){
   size_t nstr = length(str);
   Stringset *s;
   s = (Stringset *) malloc(sizeof(Stringset));
@@ -198,8 +209,15 @@ Stringset *new_stringset(SEXP str, int bytes){
   s->str_len = (int *) malloc(nstr * sizeof(int));
 
   size_t nbytes = 0L;
-  for (size_t i=0; i<nstr; i++){
-    nbytes += length(STRING_ELT(str,i));
+
+  if ( intdist ){
+    for (size_t i=0; i<nstr; i++){
+      nbytes += length(VECTOR_ELT(str,i));
+    }
+  } else {
+    for (size_t i=0; i<nstr; i++){
+      nbytes += length(STRING_ELT(str,i));
+    }
   }
 
   s->string = (unsigned int **) malloc(nstr * sizeof(int *));
@@ -209,20 +227,43 @@ Stringset *new_stringset(SEXP str, int bytes){
 
   int *t = s->str_len;
   unsigned int *d = s->data;
-  for (size_t i=0L; i < nstr; i++, t++){
-    if ( STRING_ELT(str,i) == NA_STRING ){
-      (*t) = NA_INTEGER; 
-    } else {
-      if (bytes){
+
+  if ( intdist ){
+    for (size_t i=0L; i < nstr; i++, t++){
+      if ( INTEGER(VECTOR_ELT(str,i))[0] == NA_INTEGER ){
+        (*t) = NA_INTEGER; 
+      } else {
+        (*t) = length(VECTOR_ELT(str,i));
+        memcpy(d, INTEGER(VECTOR_ELT(str,i)), (*t)*sizeof(int) );
+        s->string[i] = d;
+        (*(d + (*t))) = 0L; // append a zero.
+        d += (*t) + 1L;
+      }
+    }
+  } else if ( bytes ){
+    for (size_t i=0L; i < nstr; i++, t++){
+      if ( STRING_ELT(str,i) == NA_STRING ){
+        (*t) = NA_INTEGER; 
+      } else {
         (*t) = char_to_int(CHAR(STRING_ELT(str,i)), d);
+        s->string[i] = d;
+        (*(d + (*t))) = 0L; // append a zero.
+        d += (*t) + 1L;
+      }
+    }
+  } else {
+    for (size_t i=0L; i < nstr; i++, t++){
+      if ( STRING_ELT(str,i) == NA_STRING ){
+        (*t) = NA_INTEGER; 
       } else {
         (*t) = utf8_to_int(CHAR(STRING_ELT(str,i)), d); 
+        s->string[i] = d;
+        (*(d + (*t))) = 0L; // append a zero.
+        d += (*t) + 1L;
       }
-      s->string[i] = d;
-      (*(d + (*t))) = 0L; // append a zero.
-      d += (*t) + 1L;
     }
   }
+
   return s;
 }
 
