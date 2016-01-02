@@ -90,6 +90,14 @@ test_that("weights are handled correctly",{
   expect_equal(
     stringdist("ABC", "BC", method = "dl", weight = c(i=.1, d=.1, s=1,t=.1)),.1
   )
+  # examples from the paper; Tanks to Nathalia Potocka for reporting.
+  expect_equal(stringdist("leia","leela",method="lv",weight=c(i=.1,d=1,s=1)),1.1)
+  expect_equal(stringdist("leia","leela",method="lv",weight=c(i=1,d=.1,s=1)),2)
+  expect_equal(stringdist("a","b",method="lv",weight=c(i=.1,d=1,s=.3)),.3)
+  expect_equal(stringdist("a","b",method="osa",weight=c(i=.1,d=1,s=.3,1)),.3)
+  expect_equal(stringdist("a","b",method="dl",weight=c(i=.1,d=1,s=.3,t=1)),.3)
+  expect_equal(stringdist("leia","leela",method="dl",weight=c(i=1,d=.1,s=1,t=1)),2)
+
 })
 
 test_that("NA's are handled correctly",{
@@ -402,6 +410,16 @@ test_that("dimensions work out",{
     expect_equivalent( # bug #28
       dim(stringdistmatrix('foo',letters[1:3])), c(1,3)
     )
+})
+
+test_that("stringdistmatrix-lower-tri can output long vectors",{
+   # skipped on CRAN because of high memory use.
+   skip_on_cran()
+   # Error when input vector yields a vector too big for a long vector.
+   out <- tryCatch(stringdistmatrix(character(100663296+1),method="hamming")
+      , error = function(e) e$message )
+   expect_equal(class(out),"character")
+   expect_match(out, "exceeds maximum allowed")
 })
 
 test_that('stringdistmatrix yields correct distances',{
