@@ -36,7 +36,7 @@ performance is now negligible.
 
 In \code{utf-8}, the same (accented) character may be represented as several byte sequences. For example, an u-umlaut
 can be represented with a single byte code or as a byte code representing \code{'u'} followed by a modifier byte code
-that adds the umlaut. The \href{http://cran.r-project.org/package=stringi}{stringi} package 
+that adds the umlaut. The \href{https://cran.r-project.org/package=stringi}{stringi} package 
 of Gagolevski and Tartanus offers unicode normalisation tools.
 }
 

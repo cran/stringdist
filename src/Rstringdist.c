@@ -205,9 +205,13 @@ SEXP R_amatch(SEXP x, SEXP table, SEXP method
         len_T = T->str_len[j];
         if (len_X != NA_INTEGER && len_T != NA_INTEGER ){        // both are char (usual case)
           d = stringdist(sd, str, len_X, *tab, len_T);
+//Rprintf("d = %8.4f ",d);
           if ( d <= maxDist && d < d1){ 
             index = j + 1;
-            if ( ABS(d) < 1e-14 ) break; // exact match
+            if ( fabs(d) < 1e-14 ){ 
+ //               Rprintf(" helleu!\n");
+                  break; // exact match
+            }
             d1 = d;
           }
         } else if ( len_X == NA_INTEGER && len_T == NA_INTEGER ) {  // both are NA
@@ -308,7 +312,7 @@ SEXP R_lower_tri(SEXP a, SEXP method
       , n_threads = 1
       , col_max = n-1;
 
-    R_xlen_t p = 0
+    R_xlen_t pp = 0
       , k_start = 0
       , k_end = N;
 
@@ -317,9 +321,9 @@ SEXP R_lower_tri(SEXP a, SEXP method
       n_threads = omp_get_num_threads();
     #endif
       // some administration to parallelize the loop.
-      p = N / n_threads;
-      k_start = thread_id * p;
-      k_end   = (thread_id < n_threads - 1 ) ? k_start + p : N;
+      pp = N / n_threads;
+      k_start = thread_id * pp;
+      k_end   = (thread_id < n_threads - 1 ) ? k_start + pp : N;
       j = get_j(k_start,n);
       i = k_start + j * (j - 2*n + 3)/2;
     for ( R_xlen_t k=k_start; k < k_end; k++ ){
