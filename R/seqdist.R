@@ -1,7 +1,7 @@
 #' Compute distance metrics between integer sequences
 #'
 #' \code{seq_dist} computes pairwise string distances between elements of 
-#' \code{a} and \code{b}, where the argument with less elements is recycled. 
+#' \code{a} and \code{b}, where the argument with fewer elements is recycled. 
 #' \code{seq_distmatrix} computes the distance matrix with rows according to
 #' \code{a} and columns according to \code{b}.
 #'
