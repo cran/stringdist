@@ -57,4 +57,3 @@ stringsim("ca", "abc")
 stringsim('MARTHA','MATHRA',method='jw', p=0.1)
 
 }
-

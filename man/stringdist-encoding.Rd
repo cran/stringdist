@@ -53,6 +53,7 @@ where \code{x} is your character vector. See the documentation of \code{\link[ba
 The \code{stringi} package (Gagolewski and Tartanus) should work on any system. The command 
 \code{stringi::stri_trans_general(x,"Latin-ASCII")} transliterates character vector \code{x} to ASCII.
 }
+
 \references{
 \itemize{
  \item{The help page of \code{\link[base]{Encoding}}} describes how R handles encoding.
@@ -67,4 +68,3 @@ The \code{stringi} package (Gagolewski and Tartanus) should work on any system. 
 \item{Encoding related: \code{\link{printable_ascii}}}
 }
 }
-

@@ -122,6 +122,7 @@ otherwise 1. Note that soundex recoding is only meaningful for characters
 in the ranges a-z and A-Z. A warning is emitted when non-printable or non-ascii
 characters are encountered. Also see \code{\link{printable_ascii}}.
 }
+
 \references{
 \itemize{
 \item{
@@ -145,4 +146,3 @@ characters are encountered. Also see \code{\link{printable_ascii}}.
  \item{Encoding issues: \code{\link{stringdist-encoding}}  }
 }
 }
-

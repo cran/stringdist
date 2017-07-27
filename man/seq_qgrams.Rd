@@ -34,4 +34,3 @@ seq_qgrams(1:3,c(1,NA,2),NA_integer_)
 \seealso{
 \code{\link{seq_dist}}, \code{\link{seq_amatch}}
 }
-

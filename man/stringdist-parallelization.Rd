@@ -41,9 +41,9 @@ machine(s) as a function of \code{'nthread'}, for example using the
 \href{https://cran.r-project.org/package=microbenchmark}{microbenchmark}
 package of Mersmann.
 }
+
 \seealso{
 \itemize{
  \item{Functions running multithreaded: \code{\link{stringdist}}, \code{\link{stringdistmatrix}}, \code{\link{amatch}}, \code{\link{ain}} }
 }
 }
-

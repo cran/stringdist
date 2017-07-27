@@ -236,9 +236,9 @@ context("Q-gram distance")
 
 test_that("Edge cases in qgram method",{
    expect_equal(stringdist( "", "",method='qgram',q=0), 0)
-   expect_equal(stringdist( "", "",method='qgram',q=1),Inf)
-   expect_equal(stringdist( "","a",method='qgram',q=1),Inf)
-   expect_equal(stringdist("a", "",method='qgram',q=1),Inf)
+   expect_equal(stringdist( "", "",method='qgram',q=1),0)
+   expect_equal(stringdist( "","a",method='qgram',q=1),1)
+   expect_equal(stringdist("a", "",method='qgram',q=1),1)
    expect_equal(stringdist("a","a",method='qgram',q=1), 0)
    expect_error(stringdist("aa","bb",method='qgram',q=-2))
    expect_equal(sum(is.na(stringdist(c("a", NA, "b", "c"), c("aa", "bb", "cc", "dd"),method="qgram"))),1)
@@ -395,6 +395,17 @@ test_that("wikipedia examples",{
     round(1-0.813,3)
   )
 })
+
+test_that("Winkler's boost parameter",{
+  expect_equal(
+    stringdist("john doe","jane doe",method="jw",p=0.1, bt=0)
+    , stringdist("john doe","jane doe",method="jw",p=0.1, bt=0.1))
+  
+  expect_lt(
+    stringdist("john doe","jane doe",method="jw",p=0.1, bt=0.1)
+    , stringdist("john doe","jane doe",method="jw",p=0.1, bt=0.8))
+})
+
 
 
 context("stringdistmatrix")

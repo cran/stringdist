@@ -36,6 +36,7 @@ Next,the data is passed to the underlying routine.
 Strings with less than \code{q} characters and elements containing \code{NA} are skipped. Using \code{q=0} 
 therefore counts the number of empty strings \code{""} occuring in each argument.
 }
+
 \examples{
 
 qgrams('hello world',q=3)
@@ -67,4 +68,3 @@ qgrams(x, q=2, useBytes=TRUE, useNames=TRUE)
 \seealso{
 \code{\link{stringdist}}, \code{\link{amatch}}
 }
-

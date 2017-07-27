@@ -7,11 +7,11 @@
 \usage{
 seq_dist(a, b, method = c("osa", "lv", "dl", "hamming", "lcs", "qgram",
   "cosine", "jaccard", "jw"), weight = c(d = 1, i = 1, s = 1, t = 1), q = 1,
-  p = 0, nthread = getOption("sd_num_thread"))
+  p = 0, bt = 0, nthread = getOption("sd_num_thread"))
 
 seq_distmatrix(a, b, method = c("osa", "lv", "dl", "hamming", "lcs", "qgram",
   "cosine", "jaccard", "jw"), weight = c(d = 1, i = 1, s = 1, t = 1), q = 1,
-  p = 0, useNames = c("names", "none"),
+  p = 0, bt = 0, useNames = c("names", "none"),
   nthread = getOption("sd_num_thread"))
 }
 \arguments{
@@ -37,6 +37,10 @@ completely when \code{method='hamming'}, \code{'qgram'}, \code{'cosine'},
 \item{p}{Penalty factor for Jaro-Winkler distance. The valid range for 
 \code{p} is \code{0 <= p <= 0.25}. If \code{p=0} (default), the
 Jaro-distance is returned. Applies only to \code{method='jw'}.}
+
+\item{bt}{Winkler's boost threshold. Winkler's penalty factor is
+only applied when the Jaro distance is larger than \code{bt}
+Applies only to \code{method='jw'} and \code{p>0}.}
 
 \item{nthread}{Maximum number of threads to use. By default, a sensible
 number of threads is chosen, see \code{\link{stringdist-parallelization}}.}
@@ -67,6 +71,7 @@ themselves are treated as a number and not treated specially (Also see the examp
 Input vectors are converted with \code{as.integer}. This causes truncation for numeric
 vectors (e.g. \code{pi} will be treated as \code{3L}).
 }
+
 \examples{
 # Distances between lists of integer vectors. Note the postfix 'L' to force 
 # integer storage. The shorter argument is recycled over (\\code{a})
@@ -102,4 +107,3 @@ seq_dist(a.int,b.int)
 \seealso{
 \code{\link{seq_sim}}, \code{\link{seq_amatch}}, \code{\link{seq_qgrams}}
 }
-

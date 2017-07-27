@@ -44,4 +44,3 @@ seq_sim(L1,L2)
 \seealso{
 \code{\link{seq_dist}}, \code{\link{seq_amatch}}
 }
-

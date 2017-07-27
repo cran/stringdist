@@ -7,14 +7,14 @@
 \usage{
 stringdist(a, b, method = c("osa", "lv", "dl", "hamming", "lcs", "qgram",
   "cosine", "jaccard", "jw", "soundex"), useBytes = FALSE, weight = c(d = 1,
-  i = 1, s = 1, t = 1), maxDist = Inf, q = 1, p = 0,
+  i = 1, s = 1, t = 1), maxDist = Inf, q = 1, p = 0, bt = 0,
   nthread = getOption("sd_num_thread"))
 
 stringdistmatrix(a, b, method = c("osa", "lv", "dl", "hamming", "lcs",
   "qgram", "cosine", "jaccard", "jw", "soundex"), useBytes = FALSE,
   weight = c(d = 1, i = 1, s = 1, t = 1), maxDist = Inf, q = 1, p = 0,
-  useNames = c("none", "strings", "names"), ncores = 1, cluster = NULL,
-  nthread = getOption("sd_num_thread"))
+  bt = 0, useNames = c("none", "strings", "names"), ncores = 1,
+  cluster = NULL, nthread = getOption("sd_num_thread"))
 }
 \arguments{
 \item{a}{R object (target); will be converted by \code{as.character}}
@@ -48,6 +48,10 @@ currently slows things down when set to anything different from
 \item{p}{Penalty factor for Jaro-Winkler distance. The valid range for 
 \code{p} is \code{0 <= p <= 0.25}. If \code{p=0} (default), the
 Jaro-distance is returned. Applies only to \code{method='jw'}.}
+
+\item{bt}{Winkler's boost threshold. Winkler's penalty factor is
+only applied when the Jaro distance is larger than \code{bt}.
+Applies only to \code{method='jw'} and \code{p>0}.}
 
 \item{nthread}{Maximum number of threads to use. By default, a sensible
 number of threads is chosen, see \code{\link{stringdist-parallelization}}.}
@@ -165,4 +169,3 @@ stringdist('Euler','Ellery',method='soundex')
 \seealso{
 \code{\link{stringsim}}, \code{\link{qgrams}}, \code{\link{amatch}}
 }
-

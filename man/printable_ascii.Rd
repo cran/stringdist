@@ -34,4 +34,3 @@ printable_ascii("abc\\r")
 
 
 }
-
