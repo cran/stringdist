@@ -1,6 +1,6 @@
-8b77751f453c6167f3eb3d4602900c11 *DESCRIPTION
+323589be5a53dd60bae2e7708d0c5b4d *DESCRIPTION
 4a8cc531c51da37db22571d9c737062f *NAMESPACE
-93961088cbe77fb22f6951b801d12209 *NEWS
+e5e23c6c8a05d68fa544c2c2d2721470 *NEWS
 8ca9e9ed1098581990714f62dd21b0ab *R/amatch.R
 6cb655ba78d4baf1f3772ea1994beddd *R/doc_encoding.R
 5935eeec2e8d61e8a60937d84e6efa96 *R/doc_metrics.R
@@ -28,7 +28,7 @@ bddd55b990dc3b0133b85394d51f3d46 *man/stringdist.Rd
 2721979debad9fa5699b7ba7571ad915 *man/stringsim.Rd
 4e95da77024f1ca60e63ce4aabf063c1 *src/Makevars
 dd04eaa0d2925b8df9548e6c846c0499 *src/R_register_native.c
-7db06634cbfcb53f87e7168d6be38c55 *src/Rstringdist.c
+5af8a196999f65540355892fc2b3c171 *src/Rstringdist.c
 52a8474ebe8277ff3a9243c5b4f10d3c *src/dictionary.h
 a3e195da1af440568ab9c475c0d25359 *src/dist.h
 340fc7bf909f7230fab839522cd5a8c5 *src/dl.c
