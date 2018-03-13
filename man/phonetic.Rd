@@ -40,7 +40,7 @@ phonetic(c('Euler','Gauss','Hilbert','Knuth','Lloyd','Lukasiewicz','Wachs'),meth
 }
 \references{
 \itemize{
-\item{The Soudex algorithm implemented is the algorithm used by the 
+\item{The Soundex algorithm implemented is the algorithm used by the 
   \href{http://www.archives.gov/research/census/soundex.html}{National Archives}. 
   This algorithm differs slightly from the original algorithm patented by R.C. Russell 
   (US patents 1261167 (1918) and 1435663 (1922)). 

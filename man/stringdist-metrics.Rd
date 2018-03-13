@@ -69,7 +69,7 @@ distance but also allows transposition of adjacent characters. Here, each
 substring  may be edited only once. (For example, a character cannot be transposed twice
 to move it forward in the string). 
 
-The \bold{full Damerau-Levensthein distance} (\code{method='dl'}) is like the optimal 
+The \bold{full Damerau-Levenshtein distance} (\code{method='dl'}) is like the optimal 
 string alignment distance except that it allows for multiple edits on substrings. 
 
 The \bold{longest common substring} (method='lcs') is defined as the longest string that can be 
