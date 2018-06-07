@@ -7,14 +7,14 @@
 \usage{
 stringdist(a, b, method = c("osa", "lv", "dl", "hamming", "lcs", "qgram",
   "cosine", "jaccard", "jw", "soundex"), useBytes = FALSE, weight = c(d = 1,
-  i = 1, s = 1, t = 1), maxDist = Inf, q = 1, p = 0, bt = 0,
+  i = 1, s = 1, t = 1), q = 1, p = 0, bt = 0,
   nthread = getOption("sd_num_thread"))
 
 stringdistmatrix(a, b, method = c("osa", "lv", "dl", "hamming", "lcs",
   "qgram", "cosine", "jaccard", "jw", "soundex"), useBytes = FALSE,
-  weight = c(d = 1, i = 1, s = 1, t = 1), maxDist = Inf, q = 1, p = 0,
-  bt = 0, useNames = c("none", "strings", "names"), ncores = 1,
-  cluster = NULL, nthread = getOption("sd_num_thread"))
+  weight = c(d = 1, i = 1, s = 1, t = 1), q = 1, p = 0, bt = 0,
+  useNames = c("none", "strings", "names"),
+  nthread = getOption("sd_num_thread"))
 }
 \arguments{
 \item{a}{R object (target); will be converted by \code{as.character}}
@@ -37,11 +37,6 @@ Weights must be positive and not exceed 1. \code{weight} is ignored
 completely when \code{method='hamming'}, \code{'qgram'}, \code{'cosine'},
 \code{'Jaccard'}, \code{'lcs'}, or \code{soundex}.}
 
-\item{maxDist}{[DEPRECATED AND WILL BE REMOVED|2016] Currently kept for
-backward compatibility. It does not offer any speed gain. (In fact, it
-currently slows things down when set to anything different from
-\code{Inf}).}
-
 \item{q}{Size of the \eqn{q}-gram; must be nonnegative. Only applies to
 \code{method='qgram'}, \code{'jaccard'} or \code{'cosine'}.}
 
@@ -57,12 +52,6 @@ Applies only to \code{method='jw'} and \code{p>0}.}
 number of threads is chosen, see \code{\link{stringdist-parallelization}}.}
 
 \item{useNames}{Use input vectors as row and column names?}
-
-\item{ncores}{[DEPRECATED AND WILL BE REMOVED|2016]. Use \code{nthread} in
-stead. This argument is ignored.}
-
-\item{cluster}{[DEPRECATED AND WILL BE REMOVED|2016].  A custom cluster,
-created with \code{\link[parallel]{makeCluster}}.}
 }
 \value{
 For \code{stringdist},  a vector with string distances of size
