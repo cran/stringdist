@@ -7,8 +7,9 @@
 \usage{
 seq_amatch(x, table, nomatch = NA_integer_, matchNA = TRUE,
   method = c("osa", "lv", "dl", "hamming", "lcs", "qgram", "cosine",
-  "jaccard", "jw"), weight = c(d = 1, i = 1, s = 1, t = 1), maxDist = 0.1,
-  q = 1, p = 0, bt = 0, nthread = getOption("sd_num_thread"))
+  "jaccard", "jw"), weight = c(d = 1, i = 1, s = 1, t = 1),
+  maxDist = 0.1, q = 1, p = 0, bt = 0,
+  nthread = getOption("sd_num_thread"))
 
 seq_ain(x, table, ...)
 }

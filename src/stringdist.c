@@ -32,7 +32,7 @@
 /* 
  *
  *
- * TODO check for memory allocation failure
+ *
  */
 Stringdist *open_stringdist(Distance d, int str_len_a, int str_len_b, ...){
   va_list args;
@@ -76,7 +76,6 @@ Stringdist *open_stringdist(Distance d, int str_len_a, int str_len_b, ...){
       break;
     case jw :
       S->work = (double *) malloc( sizeof(double) * (str_len_a+str_len_b));
-
       S->weight = (double *) malloc(3L*sizeof(double));
       memcpy(S->weight, va_arg(args, double *), 3*sizeof(double));
       S->p = va_arg(args, double);
@@ -86,10 +85,14 @@ Stringdist *open_stringdist(Distance d, int str_len_a, int str_len_b, ...){
       break;
     default :
       break;
-      //TODO: set errno, return NULL
   };
 
   va_end(args);
+
+  if ( (d == osa || d == lv || d == dl || d == lcs || d== jw) &&  S->work == NULL ){ 
+      close_stringdist(S);
+      return(NULL);
+  } 
   return S; 
   
 }

@@ -6,12 +6,12 @@
 \title{Compute distance metrics between integer sequences}
 \usage{
 seq_dist(a, b, method = c("osa", "lv", "dl", "hamming", "lcs", "qgram",
-  "cosine", "jaccard", "jw"), weight = c(d = 1, i = 1, s = 1, t = 1), q = 1,
-  p = 0, bt = 0, nthread = getOption("sd_num_thread"))
+  "cosine", "jaccard", "jw"), weight = c(d = 1, i = 1, s = 1, t = 1),
+  q = 1, p = 0, bt = 0, nthread = getOption("sd_num_thread"))
 
-seq_distmatrix(a, b, method = c("osa", "lv", "dl", "hamming", "lcs", "qgram",
-  "cosine", "jaccard", "jw"), weight = c(d = 1, i = 1, s = 1, t = 1), q = 1,
-  p = 0, bt = 0, useNames = c("names", "none"),
+seq_distmatrix(a, b, method = c("osa", "lv", "dl", "hamming", "lcs",
+  "qgram", "cosine", "jaccard", "jw"), weight = c(d = 1, i = 1, s = 1, t
+  = 1), q = 1, p = 0, bt = 0, useNames = c("names", "none"),
   nthread = getOption("sd_num_thread"))
 }
 \arguments{

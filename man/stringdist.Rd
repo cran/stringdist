@@ -6,8 +6,8 @@
 \title{Compute distance metrics between strings}
 \usage{
 stringdist(a, b, method = c("osa", "lv", "dl", "hamming", "lcs", "qgram",
-  "cosine", "jaccard", "jw", "soundex"), useBytes = FALSE, weight = c(d = 1,
-  i = 1, s = 1, t = 1), q = 1, p = 0, bt = 0,
+  "cosine", "jaccard", "jw", "soundex"), useBytes = FALSE, weight = c(d
+  = 1, i = 1, s = 1, t = 1), q = 1, p = 0, bt = 0,
   nthread = getOption("sd_num_thread"))
 
 stringdistmatrix(a, b, method = c("osa", "lv", "dl", "hamming", "lcs",
