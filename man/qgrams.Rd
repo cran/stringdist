@@ -4,8 +4,7 @@
 \alias{qgrams}
 \title{Get a table of qgram counts from one or more character vectors.}
 \usage{
-qgrams(..., .list = NULL, q = 1L, useBytes = FALSE,
-  useNames = !useBytes)
+qgrams(..., .list = NULL, q = 1L, useBytes = FALSE, useNames = !useBytes)
 }
 \arguments{
 \item{...}{any number of (named) arguments, that will be coerced to character with \code{as.character}.}

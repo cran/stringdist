@@ -5,18 +5,13 @@
 \alias{stringdist-package}
 \title{A package for string distance calculation and approximate string matching.}
 \description{
-A package for string distance calculation and approximate string matching.
-}
-\section{Introduction}{
-
-
 The \pkg{stringdist} package offers fast and platform-independent string
 metrics. Its main purpose is to compute various string distances and to do 
 approximate text matching between character vectors. As of version 0.9.3,
 it is also possible to compute distances between sequences represented by
 integer vectors.
-
-
+}
+\details{
 A typical use is to match strings that are not precisely the same. For
 example
 
@@ -57,7 +52,6 @@ Besides documentation for each function, the main topics documented are:
 \item{\code{\link{stringdist-parallelization}} -- on multithreading }
 }
 }
-
 \section{Acknowledgements}{
 
 \itemize{

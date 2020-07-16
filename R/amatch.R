@@ -60,9 +60,9 @@
 #'   
 #' @param q q-gram size, only when method is \code{'qgram'}, \code{'jaccard'},
 #'   or \code{'cosine'}.
-#' @param p Winklers penalty parameter for Jaro-Winkler distance, with
+#' @param p Winklers 'prefix' parameter for Jaro-Winkler distance, with
 #'   \eqn{0\leq p\leq0.25}. Only when method is \code{'jw'}
-#' @param bt Winkler's boost threshold. Winkler's penalty factor is
+#' @param bt Winkler's boost threshold. Winkler's prefix factor is
 #'   only applied when the Jaro distance is larger than \code{bt}.
 #'   Applies only to \code{method='jw'} and \code{p>0}.
 #'
@@ -71,6 +71,8 @@
 #'   metric exist, the first one is returned. \code{ain} returns a
 #'   \code{logical} vector of length \code{length(x)} indicating wether an
 #'   element of \code{x} approximately matches an element in \code{table}.
+#'
+#' @family matching
 #'
 #' @example ../examples/amatch.R
 #' @export
@@ -175,9 +177,9 @@ ain <- function(x,table,...){
 #'   
 #' @param q q-gram size, only when method is \code{'qgram'}, \code{'jaccard'},
 #'   or \code{'cosine'}.
-#' @param p Winklers penalty parameter for Jaro-Winkler distance, with
+#' @param p Winkler's prefix parameter for Jaro-Winkler distance, with
 #'   \eqn{0\leq p\leq0.25}. Only when method is \code{'jw'}
-#' @param bt Winkler's boost threshold. Winkler's penalty factor is
+#' @param bt Winkler's boost threshold. Winkler's prefix factor is
 #'   only applied when the Jaro distance is larger than \code{bt}.
 #'   Applies only to \code{method='jw'} and \code{p>0}.
 #' @return \code{seq_amatch} returns the position of the closest match of \code{x}

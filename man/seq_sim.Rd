@@ -4,8 +4,13 @@
 \alias{seq_sim}
 \title{Compute similarity scores between sequences of integers}
 \usage{
-seq_sim(a, b, method = c("osa", "lv", "dl", "hamming", "lcs", "qgram",
-  "cosine", "jaccard", "jw"), q = 1, ...)
+seq_sim(
+  a,
+  b,
+  method = c("osa", "lv", "dl", "hamming", "lcs", "qgram", "cosine", "jaccard", "jw"),
+  q = 1,
+  ...
+)
 }
 \arguments{
 \item{a}{\code{list} of \code{integer} vectors (target)}

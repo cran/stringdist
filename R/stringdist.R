@@ -1,6 +1,5 @@
 #' A package for string distance calculation and approximate string matching.
 #'
-#' @section Introduction:
 #'
 #' The \pkg{stringdist} package offers fast and platform-independent string
 #' metrics. Its main purpose is to compute various string distances and to do 
@@ -109,16 +108,16 @@ This warning can be avoided by explicitly converting the argument(s).
 #'   \code{'Jaccard'}, \code{'lcs'}, or \code{soundex}.
 #' @param q  Size of the \eqn{q}-gram; must be nonnegative. Only applies to
 #'   \code{method='qgram'}, \code{'jaccard'} or \code{'cosine'}.
-#' @param p Penalty factor for Jaro-Winkler distance. The valid range for 
+#' @param p Prefix factor for Jaro-Winkler distance. The valid range for 
 #'   \code{p} is \code{0 <= p <= 0.25}. If \code{p=0} (default), the
 #'   Jaro-distance is returned. Applies only to \code{method='jw'}.
-#' @param bt Winkler's boost threshold. Winkler's penalty factor is
+#' @param bt Winkler's boost threshold. Winkler's prefix factor is
 #'   only applied when the Jaro distance is larger than \code{bt}.
 #'   Applies only to \code{method='jw'} and \code{p>0}.
 #' @param nthread Maximum number of threads to use. By default, a sensible
 #'   number of threads is chosen, see \code{\link{stringdist-parallelization}}.
 #'  
-#' @seealso \code{\link{stringsim}}, \code{\link{qgrams}}, \code{\link{amatch}}
+#' @seealso \code{\link{stringsim}}, \code{\link{qgrams}}, \code{\link{amatch}}, \code{\link{afind}}
 #'
 #' @return For \code{stringdist},  a vector with string distances of size
 #'   \code{max(length(a),length(b))}.
@@ -194,7 +193,6 @@ stringdist <- function(a, b
 #'
 #' @rdname stringdist
 #' @export
-#' @rdname stringdist
 stringdistmatrix <- function(a, b
   , method=c("osa","lv","dl","hamming","lcs","qgram","cosine","jaccard","jw","soundex")
   , useBytes = FALSE
@@ -306,6 +304,7 @@ METHODS <- c(
   , jaccard = 7L
   , jw      = 8L
   , soundex = 9L
+  , running_cosine = 10L
 )
 
 

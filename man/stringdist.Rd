@@ -5,16 +5,32 @@
 \alias{stringdistmatrix}
 \title{Compute distance metrics between strings}
 \usage{
-stringdist(a, b, method = c("osa", "lv", "dl", "hamming", "lcs", "qgram",
-  "cosine", "jaccard", "jw", "soundex"), useBytes = FALSE, weight = c(d
-  = 1, i = 1, s = 1, t = 1), q = 1, p = 0, bt = 0,
-  nthread = getOption("sd_num_thread"))
+stringdist(
+  a,
+  b,
+  method = c("osa", "lv", "dl", "hamming", "lcs", "qgram", "cosine", "jaccard", "jw",
+    "soundex"),
+  useBytes = FALSE,
+  weight = c(d = 1, i = 1, s = 1, t = 1),
+  q = 1,
+  p = 0,
+  bt = 0,
+  nthread = getOption("sd_num_thread")
+)
 
-stringdistmatrix(a, b, method = c("osa", "lv", "dl", "hamming", "lcs",
-  "qgram", "cosine", "jaccard", "jw", "soundex"), useBytes = FALSE,
-  weight = c(d = 1, i = 1, s = 1, t = 1), q = 1, p = 0, bt = 0,
+stringdistmatrix(
+  a,
+  b,
+  method = c("osa", "lv", "dl", "hamming", "lcs", "qgram", "cosine", "jaccard", "jw",
+    "soundex"),
+  useBytes = FALSE,
+  weight = c(d = 1, i = 1, s = 1, t = 1),
+  q = 1,
+  p = 0,
+  bt = 0,
   useNames = c("none", "strings", "names"),
-  nthread = getOption("sd_num_thread"))
+  nthread = getOption("sd_num_thread")
+)
 }
 \arguments{
 \item{a}{R object (target); will be converted by \code{as.character}}
@@ -40,11 +56,11 @@ completely when \code{method='hamming'}, \code{'qgram'}, \code{'cosine'},
 \item{q}{Size of the \eqn{q}-gram; must be nonnegative. Only applies to
 \code{method='qgram'}, \code{'jaccard'} or \code{'cosine'}.}
 
-\item{p}{Penalty factor for Jaro-Winkler distance. The valid range for 
+\item{p}{Prefix factor for Jaro-Winkler distance. The valid range for 
 \code{p} is \code{0 <= p <= 0.25}. If \code{p=0} (default), the
 Jaro-distance is returned. Applies only to \code{method='jw'}.}
 
-\item{bt}{Winkler's boost threshold. Winkler's penalty factor is
+\item{bt}{Winkler's boost threshold. Winkler's prefix factor is
 only applied when the Jaro distance is larger than \code{bt}.
 Applies only to \code{method='jw'} and \code{p>0}.}
 
@@ -156,5 +172,5 @@ stringdist('Euler','Ellery',method='soundex')
 
 }
 \seealso{
-\code{\link{stringsim}}, \code{\link{qgrams}}, \code{\link{amatch}}
+\code{\link{stringsim}}, \code{\link{qgrams}}, \code{\link{amatch}}, \code{\link{afind}}
 }

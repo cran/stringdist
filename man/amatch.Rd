@@ -5,11 +5,21 @@
 \alias{ain}
 \title{Approximate string matching}
 \usage{
-amatch(x, table, nomatch = NA_integer_, matchNA = TRUE,
-  method = c("osa", "lv", "dl", "hamming", "lcs", "qgram", "cosine",
-  "jaccard", "jw", "soundex"), useBytes = FALSE, weight = c(d = 1, i =
-  1, s = 1, t = 1), maxDist = 0.1, q = 1, p = 0, bt = 0,
-  nthread = getOption("sd_num_thread"))
+amatch(
+  x,
+  table,
+  nomatch = NA_integer_,
+  matchNA = TRUE,
+  method = c("osa", "lv", "dl", "hamming", "lcs", "qgram", "cosine", "jaccard", "jw",
+    "soundex"),
+  useBytes = FALSE,
+  weight = c(d = 1, i = 1, s = 1, t = 1),
+  maxDist = 0.1,
+  q = 1,
+  p = 0,
+  bt = 0,
+  nthread = getOption("sd_num_thread")
+)
 
 ain(x, table, ...)
 }
@@ -48,10 +58,10 @@ specified.}
 \item{q}{q-gram size, only when method is \code{'qgram'}, \code{'jaccard'},
 or \code{'cosine'}.}
 
-\item{p}{Winklers penalty parameter for Jaro-Winkler distance, with
+\item{p}{Winklers 'prefix' parameter for Jaro-Winkler distance, with
 \eqn{0\leq p\leq0.25}. Only when method is \code{'jw'}}
 
-\item{bt}{Winkler's boost threshold. Winkler's penalty factor is
+\item{bt}{Winkler's boost threshold. Winkler's prefix factor is
 only applied when the Jaro distance is larger than \code{bt}.
 Applies only to \code{method='jw'} and \code{p>0}.}
 
@@ -72,7 +82,7 @@ Approximate string matching equivalents of \code{R}'s native
 \code{\link[base]{match}} and \code{\%in\%}.
 }
 \details{
-\code{ain} is currently defined as
+\code{ain} is currently defined as 
 
 \code{ain(x,table,...) <- function(x,table,...) amatch(x, table, nomatch=0,...) > 0}
 }
@@ -123,3 +133,8 @@ ain("leia",c("uhura","leela"), maxDist=2)
 
 
 }
+\seealso{
+Other matching: 
+\code{\link{afind}()}
+}
+\concept{matching}

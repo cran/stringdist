@@ -5,11 +5,19 @@
 \alias{seq_ain}
 \title{Approximate matching for integer sequences.}
 \usage{
-seq_amatch(x, table, nomatch = NA_integer_, matchNA = TRUE,
-  method = c("osa", "lv", "dl", "hamming", "lcs", "qgram", "cosine",
-  "jaccard", "jw"), weight = c(d = 1, i = 1, s = 1, t = 1),
-  maxDist = 0.1, q = 1, p = 0, bt = 0,
-  nthread = getOption("sd_num_thread"))
+seq_amatch(
+  x,
+  table,
+  nomatch = NA_integer_,
+  matchNA = TRUE,
+  method = c("osa", "lv", "dl", "hamming", "lcs", "qgram", "cosine", "jaccard", "jw"),
+  weight = c(d = 1, i = 1, s = 1, t = 1),
+  maxDist = 0.1,
+  q = 1,
+  p = 0,
+  bt = 0,
+  nthread = getOption("sd_num_thread")
+)
 
 seq_ain(x, table, ...)
 }
@@ -50,10 +58,10 @@ specified.}
 \item{q}{q-gram size, only when method is \code{'qgram'}, \code{'jaccard'},
 or \code{'cosine'}.}
 
-\item{p}{Winklers penalty parameter for Jaro-Winkler distance, with
+\item{p}{Winkler's prefix parameter for Jaro-Winkler distance, with
 \eqn{0\leq p\leq0.25}. Only when method is \code{'jw'}}
 
-\item{bt}{Winkler's boost threshold. Winkler's penalty factor is
+\item{bt}{Winkler's boost threshold. Winkler's prefix factor is
 only applied when the Jaro distance is larger than \code{bt}.
 Applies only to \code{method='jw'} and \code{p>0}.}
 

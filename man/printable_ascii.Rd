@@ -30,7 +30,7 @@ x <- c("Motorhead", paste0("Mot",ouml,"rhead"))
 printable_ascii(x)
 
 # Control characters (like carriage return) are also excluded
-printable_ascii("abc\\r")
+printable_ascii("abc\r")
 
 
 }

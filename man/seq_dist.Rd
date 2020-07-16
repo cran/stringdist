@@ -5,14 +5,28 @@
 \alias{seq_distmatrix}
 \title{Compute distance metrics between integer sequences}
 \usage{
-seq_dist(a, b, method = c("osa", "lv", "dl", "hamming", "lcs", "qgram",
-  "cosine", "jaccard", "jw"), weight = c(d = 1, i = 1, s = 1, t = 1),
-  q = 1, p = 0, bt = 0, nthread = getOption("sd_num_thread"))
+seq_dist(
+  a,
+  b,
+  method = c("osa", "lv", "dl", "hamming", "lcs", "qgram", "cosine", "jaccard", "jw"),
+  weight = c(d = 1, i = 1, s = 1, t = 1),
+  q = 1,
+  p = 0,
+  bt = 0,
+  nthread = getOption("sd_num_thread")
+)
 
-seq_distmatrix(a, b, method = c("osa", "lv", "dl", "hamming", "lcs",
-  "qgram", "cosine", "jaccard", "jw"), weight = c(d = 1, i = 1, s = 1, t
-  = 1), q = 1, p = 0, bt = 0, useNames = c("names", "none"),
-  nthread = getOption("sd_num_thread"))
+seq_distmatrix(
+  a,
+  b,
+  method = c("osa", "lv", "dl", "hamming", "lcs", "qgram", "cosine", "jaccard", "jw"),
+  weight = c(d = 1, i = 1, s = 1, t = 1),
+  q = 1,
+  p = 0,
+  bt = 0,
+  useNames = c("names", "none"),
+  nthread = getOption("sd_num_thread")
+)
 }
 \arguments{
 \item{a}{(\code{list} of) \code{integer} or \code{numeric} vector(s). Will be converted with \code{as.integer}  (target)}
@@ -34,11 +48,11 @@ completely when \code{method='hamming'}, \code{'qgram'}, \code{'cosine'},
 \item{q}{Size of the \eqn{q}-gram; must be nonnegative. Only applies to
 \code{method='qgram'}, \code{'jaccard'} or \code{'cosine'}.}
 
-\item{p}{Penalty factor for Jaro-Winkler distance. The valid range for 
+\item{p}{Prefix factor for Jaro-Winkler distance. The valid range for 
 \code{p} is \code{0 <= p <= 0.25}. If \code{p=0} (default), the
 Jaro-distance is returned. Applies only to \code{method='jw'}.}
 
-\item{bt}{Winkler's boost threshold. Winkler's penalty factor is
+\item{bt}{Winkler's boost threshold. Winkler's prefix factor is
 only applied when the Jaro distance is larger than \code{bt}
 Applies only to \code{method='jw'} and \code{p>0}.}
 
@@ -74,7 +88,7 @@ vectors (e.g. \code{pi} will be treated as \code{3L}).
 
 \examples{
 # Distances between lists of integer vectors. Note the postfix 'L' to force 
-# integer storage. The shorter argument is recycled over (\\code{a})
+# integer storage. The shorter argument is recycled over (\code{a})
 a <- list(c(102L, 107L))                        # fu
 b <- list(c(102L,111L,111L),c(102L,111L,111L))  # foo, fo
 seq_dist(a,b)

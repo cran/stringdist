@@ -2,10 +2,28 @@
 % Please edit documentation in R/stringsim.R
 \name{stringsim}
 \alias{stringsim}
+\alias{stringsimmatrix}
 \title{Compute similarity scores between strings}
 \usage{
-stringsim(a, b, method = c("osa", "lv", "dl", "hamming", "lcs", "qgram",
-  "cosine", "jaccard", "jw", "soundex"), useBytes = FALSE, q = 1, ...)
+stringsim(
+  a,
+  b,
+  method = c("osa", "lv", "dl", "hamming", "lcs", "qgram", "cosine", "jaccard", "jw",
+    "soundex"),
+  useBytes = FALSE,
+  q = 1,
+  ...
+)
+
+stringsimmatrix(
+  a,
+  b,
+  method = c("osa", "lv", "dl", "hamming", "lcs", "qgram", "cosine", "jaccard", "jw",
+    "soundex"),
+  useBytes = FALSE,
+  q = 1,
+  ...
+)
 }
 \arguments{
 \item{a}{R object (target); will be converted by \code{as.character}.}
@@ -20,19 +38,24 @@ see \code{\link{stringdist-metrics}}.}
 \item{q}{Size of the \eqn{q}-gram; must be nonnegative. Only applies to
 \code{method='qgram'}, \code{'jaccard'} or \code{'cosine'}.}
 
-\item{...}{additional arguments are passed on to \code{\link{stringdist}}.}
+\item{...}{additional arguments are passed on to \code{\link{stringdist}} and
+\code{\link{stringdistmatrix}} respectively.}
 }
 \value{
-Returns a vector with similarities, which are values between 0 and 1 where
-1 corresponds to perfect similarity (distance 0) and 0 to complete
-dissimilarity. \code{NA} is returned when \code{\link{stringdist}} returns 
-\code{NA}. Distances equal to \code{Inf} are truncated to a similarity of
-0.
+\code{stringsim} returns a vector with similarities, which are values between
+0 and 1 where 1 corresponds to perfect similarity (distance 0) and 0 to
+complete dissimilarity. \code{NA} is returned when \code{\link{stringdist}}
+returns \code{NA}. Distances equal to \code{Inf} are truncated to a
+similarity of 0. \code{stringsimmatrix} works the same way but, equivalent to
+\code{\link{stringdistmatrix}}, returns a similarity matrix instead of a
+vector.
 }
 \description{
 \code{stringsim} computes pairwise string similarities between elements of
 \code{character} vectors \code{a} and \code{b}, where the vector with less
-elements is recycled.
+elements is recycled. 
+\code{stringsimmatrix} computes the string similarity matrix with rows
+according to \code{a} and columns according to \code{b}.
 }
 \details{
 The similarity is calculated by first calculating the distance using
