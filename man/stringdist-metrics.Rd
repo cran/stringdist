@@ -42,7 +42,7 @@ Currently, the following distance metrics are supported by \pkg{stringdist}.
    \code{qgram} \tab \eqn{q}-gram distance. \cr
    \code{cosine} \tab cosine distance between \eqn{q}-gram profiles \cr
    \code{jaccard} \tab Jaccard distance between \eqn{q}-gram profiles \cr
-   \code{jw} \tab Jaro, or Jaro-Winker distance.\cr
+   \code{jw} \tab Jaro, or Jaro-Winkler distance.\cr
    \code{soundex} \tab Distance based on soundex encoding (see below)
 }
 }
