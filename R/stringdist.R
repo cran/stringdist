@@ -85,7 +85,7 @@ This warning can be avoided by explicitly converting the argument(s).
 #'
 #' 
 #' \code{stringdist} computes pairwise string distances between elements of
-#' \code{a} and \code{b}, where the argument with less elements is recycled.
+#' \code{a} and \code{b}, where the argument with fewer elements is recycled.
 #' \code{stringdistmatrix} computes the string distance matrix with rows
 #' according to
 #' \code{a} and columns according to \code{b}.
