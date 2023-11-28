@@ -1,6 +1,6 @@
-82fab7580aa95f4c46f1aa5014d3f327 *DESCRIPTION
+a12e56ced2524a1c5a26dac0b341b7ab *DESCRIPTION
 cc3642555c30befb6ffe4e1186221167 *NAMESPACE
-51604008b3fd785c4d2719d82cd2240e *NEWS
+3df06e57ec35f97bbefff7f28b53329e *NEWS
 f0141855430eee83e0af05c3f577dc3c *R/afind.R
 4258c5b11b68420f78b67a6d166f9c29 *R/amatch.R
 8b5dd455c5213cd167cc1cd34fc9b938 *R/doc_api.R
@@ -13,13 +13,13 @@ a4ec4e8c86c85fd48c5da77a0910d566 *R/seqdist.R
 d35197e7dc8c3278019ac76269298af1 *R/stringdist.R
 7d49b471bd1c44fe671d9e0b882b3c70 *R/stringsim.R
 8e8417b8a98fea38db2704162b10a182 *R/utils.R
-d8421a72811480a7a198029d5f06a581 *README.md
-917d5132ab14b1b2b2bd70b8b23a0d10 *build/vignette.rds
+e473e754d2208d96db0a981c5f12b994 *README.md
+a8f7809383733b78950ad63c6f43f6dd *build/vignette.rds
 7d23a627daf862ea03ed7a03eb321b05 *inst/CITATION
 977822cf7222d72a3cde2a6cd22bbb5a *inst/doc/RJournal_6_111-122-2014.Rnw
-02c9033ef3d38e93e4a2837c6dc9628d *inst/doc/RJournal_6_111-122-2014.pdf
+b6313eb92d0e8de766b5b3179d832cfc *inst/doc/RJournal_6_111-122-2014.pdf
 2da3ce2311eb264c1df440f6e639b386 *inst/doc/stringdist_C-Cpp_api.Rnw
-d0859cfe9f7e9802e21d3a12b1d669b8 *inst/doc/stringdist_C-Cpp_api.pdf
+c70fde23835c5853d58fad2ed2f44c6a *inst/doc/stringdist_C-Cpp_api.pdf
 25e4b2bb89435d45989313c68613d83a *inst/include/Doxyfile
 18f26dcb8ed96f6f3774b0458b860d8a *inst/include/stringdist_api.h
 bef376a25977068673e3c0862bc8809c *inst/tinytest/test_afind.R
@@ -51,7 +51,7 @@ d951d7f619777d2c9c98452ca31b4704 *man/stringdist-encoding.Rd
 c4340fd02e530432f1a46071ac9fe05d *src/Makevars
 c4340fd02e530432f1a46071ac9fe05d *src/Makevars.win
 f944fea36f8448948f2d340f6cb4bb04 *src/R_register_native.c
-f36c00bd76e12b1cb21498b34dd2e900 *src/Rstringdist.c
+73360fdcebfb7a931e1151ec08387402 *src/Rstringdist.c
 52a8474ebe8277ff3a9243c5b4f10d3c *src/dictionary.h
 ccab45efb43f7eb2deee70b80218e9df *src/dist.h
 1c7491a78791ded634f49240cfe6f867 *src/dl.c
@@ -60,7 +60,7 @@ ccab45efb43f7eb2deee70b80218e9df *src/dist.h
 237eb0a9d9f7191576fc31a93ec23ea5 *src/lcs.c
 b1c0a71907c59ae45b9a52b49f6f38a5 *src/lv.c
 2e59616ad0a2e85b731fe459fab31d76 *src/osa.c
-67103cb46281336a643aaff23bf99788 *src/qgram.c
+e41c5fc5d08489fb30b4ac52e03927e7 *src/qgram.c
 3295784960d90a9e03c0b8a3f187f52f *src/qtree.h
 c4fc61cf43521ce9aa57110178c67df4 *src/soundex.c
 c16ff90cd0a544170e768c950fc55770 *src/stringdist.c
