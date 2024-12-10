@@ -72,3 +72,25 @@ If you would like to cite this package, please cite the \href{https://journal.r-
 Or use \code{citation('stringdist')} to get a bibtex item.
 }
 
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/markvanderloo/stringdist}
+  \item Report bugs at \url{https://github.com/markvanderloo/stringdist/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: Mark van der Loo \email{mark.vanderloo@gmail.com} (\href{https://orcid.org/0000-0002-9807-4686}{ORCID})
+
+Other contributors:
+\itemize{
+  \item Jan van der Laan [contributor]
+  \item R Core Team [contributor]
+  \item Nick Logan [contributor]
+  \item Chris Muir [contributor]
+  \item Johannes Gruber [contributor]
+  \item Brian Ripley [contributor]
+}
+
+}

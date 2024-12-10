@@ -124,7 +124,7 @@ characters are encountered. Also see \code{\link{printable_ascii}}.
 
 The \bold{running_cosine} distance is an implementatation of the cosine
 distance especially meant for fuzzy text search as in \code{\link{afind}}.
-In fuzzy search a window of \code{n} characters slides accros a (long)
+In fuzzy search a window of \code{n} characters slides across a (long)
 string while for each position of the window the distance between the part
 of the string in the window and a search pattern is computed. The (position
 of) the window with the shortest distance to the search pattern is returned.

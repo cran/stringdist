@@ -48,5 +48,5 @@ phonetic(c('Euler','Gauss','Hilbert','Knuth','Lloyd','Lukasiewicz','Wachs'),meth
 }
 }
 \seealso{
-\code{\link{printable_ascii}}, \code{\link{stringdist-package}}
+\code{\link{printable_ascii}}
 }

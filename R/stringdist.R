@@ -70,7 +70,7 @@
 #'
 #'
 #' 
-{}
+"_PACKAGE"
 
 listwarning <- function(x,y){
 sprintf("
